@@ -1,0 +1,2090 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <script type="module">
+  // Import the functions you need from the SDKs you need
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-app.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-analytics.js";
+  // TODO: Add SDKs for Firebase products that you want to use
+  // https://firebase.google.com/docs/web/setup#available-libraries
+
+  // Your web app's Firebase configuration
+  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+  const firebaseConfig = {
+    apiKey: "AIzaSyCSzYM4SGHE42rS5hGYjoail9nr4QX2hyA",
+    authDomain: "nottaz.firebaseapp.com",
+    projectId: "nottaz",
+    storageBucket: "nottaz.firebasestorage.app",
+    messagingSenderId: "608571214736",
+    appId: "1:608571214736:web:1b771dff04952e13ccc115",
+    measurementId: "G-FGNMGTTFRB"
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(app);
+</script>
+  <link rel="manifest" href="manifest.json">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Nottaz</title>
+  <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#f4f6f9" media="(prefers-color-scheme: light)">
+  <style>
+    :root {
+      --bg: #f4f6f9;
+      --surface: rgba(255, 255, 255, 0.8);
+      --surface-solid: #ffffff;
+      --text: #000000;
+      --text-secondary: #333333;
+      --primary: #4f46e5;
+      --primary-hover: #4338ca;
+      --danger: #d32f2f;
+      --danger-hover: #b71c1c;
+      --success: #006400;
+      --success-hover: #004d00;
+      --border: rgba(0, 0, 0, 0.06);
+      --shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+      --radius: 14px;
+      --blur: blur(12px);
+      --transition: 0.2s ease;
+      --accent-yellow: #facc15;
+      --accent-yellow-soft: rgba(250, 204, 21, 0.8);
+      --accent-yellow-strong: #eab308;
+      --fab-bg: #facc15;
+      --fab-text: #1e293b;
+      --white: #ffffff;
+      --black: #000000;
+      --selection-border: rgba(255, 165, 0, 0.5);
+      --action-color: #facc15;
+      --action-hover: #eab308;
+      --nav-selected-color: #ffffff;
+      --nav-unselected-color: #ffffff;
+      --nav-selected-opacity: 1;
+      --nav-unselected-opacity: 0.5;
+      --editor-bar-bottom: 18px;
+      --editor-bar-color: rgba(255, 215, 0, 0.3);
+    }
+
+    [data-theme='dark'] {
+      --bg: #000000;
+      --surface: rgba(30, 30, 30, 0.8);
+      --surface-solid: #1e1e1e;
+      --text: #f1f5f9;
+      --text-secondary: #a0a0a0;
+      --primary: #818cf8;
+      --primary-hover: #6366f1;
+      --danger: #d32f2f;
+      --danger-hover: #b71c1c;
+      --success: #228b22;
+      --success-hover: #1a6b1a;
+      --border: rgba(255, 255, 255, 0.08);
+      --shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+      --accent-yellow: #facc15;
+      --accent-yellow-soft: rgba(250, 204, 21, 0.5);
+      --accent-yellow-strong: #fbbf24;
+      --fab-bg: #facc15;
+      --fab-text: #000000;
+      --white: #ffffff;
+      --black: #000000;
+      --selection-border: rgba(255, 165, 0, 0.5);
+      --action-color: #facc15;
+      --action-hover: #eab308;
+      --nav-selected-color: #ffffff;
+      --nav-unselected-color: #ffffff;
+      --nav-selected-opacity: 1;
+      --nav-unselected-opacity: 0.5;
+      --editor-bar-bottom: 18px;
+      --editor-bar-color: rgba(255, 255, 255, 0.15);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      transition: background 0.3s, color 0.3s, filter 0.3s;
+      -webkit-font-smoothing: antialiased;
+      user-select: none;
+      filter: brightness(var(--brightness, 1));
+      overscroll-behavior: none;
+      letter-spacing: normal !important;
+      word-spacing: normal !important;
+      line-height: 1.4;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .loading-overlay {
+      position: fixed;
+      inset: 0;
+      background: #000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      transition: opacity 0.5s ease;
+    }
+
+    .loading-overlay img {
+      width: 150px;
+      height: auto;
+      object-fit: contain;
+    }
+
+    .app {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 0 16px 100px;
+      position: relative;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 14px 20px;
+      background: var(--surface);
+      backdrop-filter: var(--blur);
+      -webkit-backdrop-filter: var(--blur);
+      border: 1px solid var(--border);
+      border-radius: 0 0 16px 16px;
+      box-shadow: var(--shadow);
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      transition: background 0.3s, border-color 0.3s;
+      flex-shrink: 0;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .header-title {
+      flex: 1;
+      margin-left: 8px;
+    }
+
+    .header-title h1 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      letter-spacing: normal !important;
+      word-spacing: normal !important;
+      line-height: 1.2;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+    }
+
+    .header-title p {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      font-weight: 400;
+      letter-spacing: normal !important;
+      word-spacing: normal !important;
+      line-height: 1.4;
+      margin-top: 2px;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+    }
+
+    .icon-btn {
+      background: var(--surface-solid);
+      border: 1px solid var(--border);
+      border-radius: 50%;
+      width: 38px;
+      height: 38px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 1.1rem;
+      color: var(--text);
+      transition: background var(--transition), opacity var(--transition), transform var(--transition);
+      opacity: 0.85;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+      -webkit-tap-highlight-color: transparent;
+      outline: none;
+    }
+
+    .icon-btn:hover {
+      background: var(--bg);
+      opacity: 1;
+      transform: translateY(-1px);
+    }
+
+    .icon-btn:active {
+      transform: scale(0.95);
+    }
+
+    #backButton {
+      position: relative !important;
+      top: -5px !important;
+      margin: 0 !important;
+      line-height: 1 !important;
+      background: transparent;
+      border: none;
+      box-shadow: none;
+      width: auto;
+      height: auto;
+      font-size: 2rem;
+      opacity: 1;
+      padding: 0;
+      border-radius: 0;
+      color: var(--text);
+      text-shadow: 0 0 4px rgba(0,0,0,0.2);
+      transition: opacity var(--transition), transform var(--transition);
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+      outline: none;
+      letter-spacing: normal !important;
+      word-spacing: normal !important;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #backButton:hover {
+      background: transparent;
+      opacity: 0.8;
+      transform: scale(1.1);
+    }
+
+    .header-action-btn {
+      background: none;
+      border: none;
+      color: var(--action-color);
+      font-size: 0.95rem;
+      font-weight: 500;
+      cursor: pointer;
+      padding: 4px 8px;
+      border-radius: 6px;
+      transition: background var(--transition), color var(--transition);
+      -webkit-tap-highlight-color: transparent;
+      outline: none;
+      letter-spacing: normal !important;
+      word-spacing: normal !important;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+      vertical-align: middle;
+    }
+
+    .header-action-btn:hover {
+      background: rgba(0,0,0,0.05);
+      color: var(--action-hover);
+    }
+
+    .sidebar-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.4);
+      z-index: 150;
+      backdrop-filter: blur(4px);
+      animation: fadeIn 0.2s ease;
+    }
+
+    .sidebar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      width: 280px;
+      background: var(--surface-solid);
+      z-index: 160;
+      box-shadow: 2px 0 12px rgba(0,0,0,0.2);
+      padding: 20px 16px;
+      overflow-y: auto;
+      animation: slideInLeft 0.25s ease;
+    }
+
+    @keyframes slideInLeft {
+      from { transform: translateX(-100%); }
+      to { transform: translateX(0); }
+    }
+
+    .sidebar-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .sidebar-header h2 {
+      font-size: 1.2rem;
+      font-weight: 600;
+      letter-spacing: normal !important;
+      word-spacing: normal !important;
+    }
+
+    .sidebar-close {
+      background: none;
+      border: none;
+      font-size: 1.8rem;
+      cursor: pointer;
+      color: var(--text);
+      line-height: 1;
+      -webkit-tap-highlight-color: transparent;
+      outline: none;
+    }
+
+    .sidebar-menu {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .sidebar-menu li {
+      margin-bottom: 6px;
+    }
+
+    .sidebar-menu button {
+      display: block;
+      width: 100%;
+      padding: 12px 14px;
+      text-align: left;
+      background: none;
+      border: none;
+      color: var(--text);
+      cursor: pointer;
+      border-radius: 10px;
+      font-size: 0.95rem;
+      transition: background var(--transition);
+      -webkit-tap-highlight-color: transparent;
+      outline: none;
+      letter-spacing: normal !important;
+      word-spacing: normal !important;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+    }
+
+    .sidebar-menu button:hover {
+      background: var(--bg);
+    }
+
+    .sidebar-version {
+      margin-top: 30px;
+      padding-top: 16px;
+      border-top: 1px solid var(--border);
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+      text-align: center;
+      letter-spacing: normal !important;
+    }
+
+    .menu-container {
+      position: relative;
+    }
+
+    .menu-dropdown {
+      position: absolute;
+      right: 0;
+      top: calc(100% + 4px);
+      background: var(--surface-solid);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      box-shadow: var(--shadow);
+      min-width: 220px;
+      padding: 8px;
+      z-index: 60;
+      animation: fadeIn 0.15s ease;
+      backdrop-filter: var(--blur);
+      -webkit-backdrop-filter: var(--blur);
+    }
+
+    .menu-dropdown button {
+      display: block;
+      width: 100%;
+      padding: 10px 12px;
+      text-align: left;
+      background: none;
+      border: none;
+      color: var(--text);
+      cursor: pointer;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      transition: background var(--transition);
+      -webkit-tap-highlight-color: transparent;
+      outline: none;
+      letter-spacing: normal !important;
+      word-spacing: normal !important;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+    }
+
+    .menu-dropdown button:hover {
+      background: var(--bg);
+    }
+
+    .search-bar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 16px;
+      padding: 0 4px;
+    }
+
+    .search-bar input {
+      flex: 1;
+      padding: 10px 14px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: var(--surface);
+      color: var(--text);
+      font-size: 0.95rem;
+      outline: none;
+      backdrop-filter: var(--blur);
+      -webkit-tap-highlight-color: transparent;
+      transition: border-color var(--transition);
+      letter-spacing: normal !important;
+      word-spacing: normal !important;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+    }
+
+    .search-bar input:focus {
+      border-color: var(--accent-yellow);
+    }
+
+    .view {
+      padding: 20px 0;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+    }
+
+    .view-header {
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .mode-switch-container {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .mode-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 1.25rem;
+      font-weight: 600;
+      letter-spacing: normal !important;
+      word-spacing: normal !important;
+      color: var(--nav-unselected-color);
+      opacity: var(--nav-unselected-opacity);
+      transition: opacity var(--transition);
+      -webkit-tap-highlight-color: transparent;
+      outline: none;
+      padding: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+    }
+
+    .mode-btn.active {
+      color: var(--nav-selected-color);
+      opacity: var(--nav-selected-opacity);
+    }
+
+    .mode-btn:hover {
+      opacity: 1;
+    }
+
+    .separator {
+      pointer-events: none;
+      color: var(--nav-unselected-color);
+      opacity: var(--nav-unselected-opacity);
+      font-size: 1.25rem;
+      font-weight: 600;
+    }
+
+    .fab-new-note {
+      position: fixed;
+      bottom: 100px;
+      left: 24px;
+      z-index: 100;
+      background: var(--fab-bg);
+      color: var(--fab-text);
+      border: none;
+      border-radius: 50%;
+      width: 56px;
+      height: 56px;
+      font-size: 24px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      transition: background var(--transition), transform var(--transition), box-shadow var(--transition);
+      opacity: 0.95;
+      -webkit-tap-highlight-color: transparent;
+      outline: none;
+    }
+
+    .fab-new-note:hover {
+      background: #eab308;
+      transform: scale(1.05);
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+      opacity: 1;
+    }
+
+    .fab-new-note:active {
+      transform: scale(0.95);
+    }
+
+    .cancel-selection-btn {
+      position: fixed;
+      top: 90px;
+      left: 24px;
+      z-index: 90;
+      background: rgba(0,0,0,0.6);
+      color: white;
+      border: none;
+      border-radius: 20px;
+      padding: 8px 16px;
+      font-size: 0.9rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      backdrop-filter: blur(4px);
+      -webkit-tap-highlight-color: transparent;
+      outline: none;
+      letter-spacing: normal !important;
+      word-spacing: normal !important;
+    }
+
+    .notes-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 14px;
+      align-content: start;
+    }
+
+    .note-card {
+      background: var(--surface);
+      backdrop-filter: var(--blur);
+      -webkit-backdrop-filter: var(--blur);
+      border: 1px solid var(--accent-yellow-soft);
+      border-radius: var(--radius);
+      padding: 16px;
+      cursor: pointer;
+      position: relative;
+      transition: transform var(--transition), box-shadow var(--transition),
+        background var(--transition), border-color var(--transition);
+      opacity: 0.9;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .note-card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow);
+      opacity: 1;
+      border-color: var(--accent-yellow-strong);
+    }
+
+    .note-card.selected {
+      border-color: var(--selection-border);
+      border-width: 1px;
+      box-shadow: 0 0 0 1px var(--selection-border);
+      opacity: 1;
+    }
+
+    .note-card h3 {
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: 6px;
+      word-break: break-word;
+      letter-spacing: normal !important;
+      word-spacing: normal !important;
+      line-height: 1.3;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+    }
+
+    .note-card p {
+      color: var(--text-secondary);
+      font-size: 0.85rem;
+      margin-bottom: 10px;
+      word-break: break-word;
+      line-height: 1.4;
+      opacity: 0.8;
+      letter-spacing: normal !important;
+      word-spacing: normal !important;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+    }
+
+    .note-date {
+      font-size: 0.7rem;
+      color: var(--text-secondary);
+      opacity: 0.7;
+      letter-spacing: normal !important;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--text-secondary);
+      opacity: 0.7;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      flex: 1;
+      min-height: 50vh;
+    }
+
+    .empty-state h3 {
+      font-size: 1.5rem;
+      color: var(--text);
+      margin: 8px 0 6px;
+      font-weight: 600;
+      letter-spacing: normal !important;
+      word-spacing: normal !important;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+    }
+
+    .empty-state p {
+      font-size: 1rem;
+      letter-spacing: normal !important;
+      word-spacing: normal !important;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+    }
+
+    .note-title-input {
+      width: 100%;
+      padding: 12px 16px;
+      font-size: 1.3rem;
+      border: none;
+      border-bottom: 1px solid var(--accent-yellow-soft);
+      background: transparent;
+      color: var(--text);
+      margin-bottom: 8px;
+      outline: none;
+      transition: border var(--transition);
+      opacity: 0.9;
+      -webkit-tap-highlight-color: transparent;
+      flex-shrink: 0;
+      letter-spacing: normal !important;
+      word-spacing: normal !important;
+      line-height: 1.2;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+    }
+
+    .note-title-input:focus {
+      border-bottom-color: var(--accent-yellow-strong);
+      opacity: 1;
+    }
+
+    .note-content-input {
+      width: 100%;
+      flex: 1;
+      min-height: 0;
+      padding: 12px 16px;
+      font-size: 0.95rem;
+      line-height: 1.5;
+      border: none;
+      background: transparent;
+      color: var(--text);
+      resize: none;
+      overflow-y: auto;
+      outline: none;
+      transition: border var(--transition);
+      opacity: 0.9;
+      -webkit-tap-highlight-color: transparent;
+      letter-spacing: normal !important;
+      word-spacing: normal !important;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+    }
+
+    .note-content-input:focus {
+      opacity: 1;
+    }
+
+    .editor-bottom-bar {
+      position: fixed;
+      bottom: var(--editor-bar-bottom);
+      left: 0;
+      width: 100%;
+      height: 1px;
+      background-color: var(--editor-bar-color);
+      z-index: 10;
+      transition: transform 0.2s ease, background-color 0.3s;
+      pointer-events: none;
+    }
+
+    .confirm-overlay,
+    .settings-overlay {
+      background: rgba(0, 0, 0, 0.88) !important;
+      backdrop-filter: blur(20px) !important;
+      -webkit-backdrop-filter: blur(20px) !important;
+    }
+
+    .confirm-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 200;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 0.2s ease;
+    }
+
+    .settings-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 200;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 0.2s ease;
+    }
+
+    .confirm-box {
+      background: var(--surface-solid);
+      border-radius: 16px;
+      padding: 24px;
+      max-width: 320px;
+      width: 90%;
+      box-shadow: var(--shadow);
+      text-align: center;
+    }
+
+    .confirm-box p {
+      margin-bottom: 16px;
+      font-size: 1rem;
+      letter-spacing: normal !important;
+      word-spacing: normal !important;
+    }
+
+    .confirm-buttons {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+    }
+
+    .btn-no,
+    .btn-yes {
+      padding: 8px 18px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      -webkit-tap-highlight-color: transparent;
+      outline: none;
+      letter-spacing: normal !important;
+      word-spacing: normal !important;
+    }
+
+    .btn-no {
+      background: var(--surface);
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+
+    .btn-yes {
+      background: var(--danger);
+      color: #fff;
+    }
+
+    .btn-yes:hover {
+      background: var(--danger-hover);
+    }
+
+    .restore-btn {
+      background: var(--surface);
+      color: var(--text);
+      border: 1px solid var(--accent-yellow);
+      padding: 6px 14px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.8rem;
+      -webkit-tap-highlight-color: transparent;
+      outline: none;
+      transition: border-color var(--transition), background var(--transition);
+      letter-spacing: normal !important;
+      word-spacing: normal !important;
+    }
+
+    .restore-btn:hover {
+      border-color: var(--accent-yellow-strong);
+      background: var(--bg);
+    }
+
+    .delete-btn {
+      background: var(--danger);
+      color: #fff;
+      border: none;
+      padding: 6px 14px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.8rem;
+      -webkit-tap-highlight-color: transparent;
+      outline: none;
+      letter-spacing: normal !important;
+      word-spacing: normal !important;
+    }
+
+    .delete-btn:hover {
+      background: var(--danger-hover);
+    }
+
+    .settings-box {
+      background: var(--surface-solid);
+      border-radius: 16px;
+      padding: 24px;
+      max-width: 360px;
+      width: 90%;
+      box-shadow: var(--shadow);
+    }
+
+    .settings-box h2 {
+      font-size: 1.2rem;
+      margin-bottom: 16px;
+      letter-spacing: normal !important;
+      word-spacing: normal !important;
+    }
+
+    .setting-group {
+      margin-bottom: 20px;
+    }
+
+    .setting-label {
+      font-weight: 500;
+      margin-bottom: 8px;
+      letter-spacing: normal !important;
+      word-spacing: normal !important;
+    }
+
+    .theme-options {
+      display: flex;
+      gap: 8px;
+    }
+
+    .theme-option {
+      padding: 8px 16px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      cursor: pointer;
+      background: var(--surface);
+      color: var(--text);
+      -webkit-tap-highlight-color: transparent;
+      outline: none;
+      letter-spacing: normal !important;
+      word-spacing: normal !important;
+    }
+
+    .theme-option.active {
+      border-color: var(--accent-yellow);
+      background: rgba(250, 204, 21, 0.1);
+    }
+
+    .brightness-slider {
+      width: 100%;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+      outline: none;
+    }
+
+    .info-view {
+      padding: 20px 0;
+    }
+
+    .info-view h1 {
+      font-size: 1.5rem;
+      margin-bottom: 16px;
+      letter-spacing: normal !important;
+      word-spacing: normal !important;
+    }
+
+    .info-view h2 {
+      font-size: 1.1rem;
+      margin: 16px 0 8px;
+      letter-spacing: normal !important;
+      word-spacing: normal !important;
+    }
+
+    .info-view p,
+    .info-view li {
+      font-size: 0.95rem;
+      line-height: 1.6;
+      margin-bottom: 8px;
+      color: var(--text-secondary);
+      letter-spacing: normal !important;
+      word-spacing: normal !important;
+    }
+
+    .info-view ul {
+      padding-left: 20px;
+    }
+
+    .trash-notice {
+      margin-bottom: 12px;
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      opacity: 0.8;
+      letter-spacing: normal !important;
+      word-spacing: normal !important;
+    }
+
+    .toast {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: #111;
+      color: #fff;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 12px;
+      border: 1px solid #333;
+      z-index: 9999;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      letter-spacing: normal !important;
+      word-spacing: normal !important;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+    }
+
+    .toast.show {
+      opacity: 1;
+    }
+
+    .trash-card {
+      border: 1px solid #222 !important;
+    }
+
+    .trash-card:hover {
+      border-color: #333 !important;
+    }
+
+    @media (max-width: 600px) {
+      .notes-list {
+        grid-template-columns: 1fr;
+      }
+
+      .header {
+        padding: 12px 16px;
+      }
+
+      .view {
+        padding: 14px 0;
+      }
+
+      .fab-new-note {
+        bottom: 80px;
+        left: 16px;
+        width: 50px;
+        height: 50px;
+        font-size: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="loadingOverlay" class="loading-overlay">
+    <img src="https://i.postimg.cc/0QGz0y1Q/1000073770-removebg-preview.png" alt="Carregando..." />
+  </div>
+
+  <div id="app" class="app hidden">
+    <header class="header">
+      <div class="header-left">
+        <button id="menuButton" class="icon-btn" aria-label="Menu">☰</button>
+        <button id="backButton" class="hidden" aria-label="Voltar">←</button>
+      </div>
+      <div class="header-title">
+        <h1>Nottaz</h1>
+        <p id="viewSubtitle">Bem vindo as notas</p>
+      </div>
+      <button id="headerSaveBtn" class="header-action-btn hidden">Salvar</button>
+      <button id="headerUndoBtn" class="header-action-btn hidden">Desfazer</button>
+      <div id="editorMenuContainer" class="menu-container hidden">
+        <button id="editorDotsButton" class="icon-btn" aria-label="Menu">⋮</button>
+        <div id="editorDotsDropdown" class="menu-dropdown hidden">
+          <button id="editorShareBtn">Compartilhar</button>
+          <button id="editorCopyBtn">Copiar</button>
+          <button id="editorReadModeBtn">Modo d. leitura</button>
+        </div>
+      </div>
+      <button id="searchButton" class="icon-btn" aria-label="Buscar" title="Buscar notas">⌕</button>
+      <button id="helpButton" class="icon-btn" aria-label="Ajuda" title="Como usar">?</button>
+      <div class="menu-container">
+        <button id="dotsButton" class="icon-btn" aria-label="Menu">⋮</button>
+        <div id="dotsDropdown" class="menu-dropdown hidden">
+          <button id="selectAllBtn">Selecionar todas as notas</button>
+          <button id="importBtn">Importar arquivos de texto</button>
+          <button id="shareBtn">Compartilhar notas</button>
+        </div>
+      </div>
+    </header>
+
+    <div id="sidebarOverlay" class="sidebar-overlay hidden"></div>
+    <div id="sidebar" class="sidebar hidden">
+      <div class="sidebar-header">
+        <h2>Menu</h2>
+        <button id="sidebarClose" class="sidebar-close">×</button>
+      </div>
+      <ul class="sidebar-menu">
+        <li><button id="menuMinhasNotas"><span style="font-size:1.2em;">▤</span> Minhas notas</button></li>
+        <li><button id="menuDefinicao"><span style="font-size:1.2em;">⚙︎</span> Definições</button></li>
+        <li><button id="menuPolitica"><span style="font-size:1.2em;">⌑</span> Política de privacidade</button></li>
+        <li><button id="menuLixeira"><span style="font-size:1.2em;">♲</span> Lixeira</button></li>
+        <li><button id="menuIdioma" style="cursor: default;"><span style="font-size:1.2em;">◎</span> Idioma: português</button></li>
+        <li><button id="menuCompartilhar"><span style="font-size:1.2em;">↗</span> Compartilhar</button></li>
+        <li><button id="menuTermos"><span style="font-size:1.2em;">▥</span> Termos e condições</button></li>
+      </ul>
+      <div class="sidebar-version">Versão 1.1.0</div>
+    </div>
+
+    <div id="searchBar" class="search-bar hidden">
+      <input type="text" id="searchInput" placeholder="Buscar por título..." />
+    </div>
+
+    <button id="cancelSelectionBtn" class="cancel-selection-btn hidden">← Cancelar seleção</button>
+
+    <main id="listView" class="view">
+      <div class="view-header mode-switch-container">
+        <button id="normalModeBtn" class="mode-btn active">Suas notas</button>
+        <span class="separator">/</span>
+        <button id="privateModeBtn" class="mode-btn">Notas privadas</button>
+      </div>
+      <div id="notesList" class="notes-list"></div>
+    </main>
+
+    <main id="editorView" class="view hidden">
+      <input id="noteTitle" class="note-title-input" type="text" placeholder="Título da nota" maxlength="200" />
+      <textarea id="noteContent" class="note-content-input" placeholder="O que está pensando..." maxlength="100000"></textarea>
+    </main>
+
+    <main id="trashView" class="view hidden">
+      <div class="trash-notice">As notas excluídas permanecerão na lixeira por 30 dias e depois serão excluídas permanentemente.</div>
+      <div id="trashList" class="notes-list"></div>
+    </main>
+
+    <main id="privacyView" class="view hidden info-view">
+      <h1>Política de Privacidade</h1>
+      <p>Última atualização: 26/08/2026</p>
+      <p>Bem-vindo ao Nottaz. Esta política descreve como coletamos, usamos, armazenamos e protegemos suas informações ao utilizar nosso aplicativo de notas.</p>
+      <h2>1. Informações que Coletamos</h2>
+      <p>O Nottaz foi projetado para respeitar sua privacidade. Todas as suas notas são armazenadas localmente no seu dispositivo (localStorage) e não são transmitidas para nenhum servidor.</p>
+      <p>Não coletamos, armazenamos ou processamos quaisquer dados pessoais identificáveis, como nome, e-mail, telefone, localização ou qualquer outra informação sensível.</p>
+      <h2>2. Uso das Informações</h2>
+      <p>As informações que você cria no aplicativo (notas, títulos, conteúdo) são utilizadas exclusivamente para o funcionamento do aplicativo, como exibição, edição, exclusão e recuperação de notas.</p>
+      <p>Não utilizamos suas informações para fins de marketing, publicidade ou qualquer outro propósito além do funcionamento do app.</p>
+      <h2>3. Armazenamento e Segurança</h2>
+      <p>Seus dados são armazenados localmente no seu navegador. O Nottaz não possui servidores próprios, portanto não há risco de vazamento de dados por nossa parte.</p>
+      <p>Recomendamos que você faça backups regulares de suas notas, pois a limpeza do navegador pode resultar na perda permanente dos dados.</p>
+      <h2>4. Compartilhamento de Informações</h2>
+      <p>Não compartilhamos, vendemos, alugamos ou trocamos suas informações com terceiros. A funcionalidade de compartilhamento do aplicativo apenas utiliza os recursos nativos do seu dispositivo (Web Share API) para compartilhar conteúdo que você escolher, sem envolver nossos servidores.</p>
+      <h2>5. Direitos do Usuário</h2>
+      <p>Você tem total controle sobre suas notas. Pode criar, editar, excluir e recuperar notas a qualquer momento. Pode também limpar todos os dados removendo o armazenamento local do navegador.</p>
+      <h2>6. Alterações nesta Política</h2>
+      <p>Podemos atualizar esta política ocasionalmente. Quaisquer alterações serão refletidas nesta página com a data de atualização revisada.</p>
+      <h2>7. Contato</h2>
+      <p>Se você tiver dúvidas sobre esta política, entre em contato conosco através do e-mail: suportetakka@gmail.com</p>
+      <button id="privacyBackBtn" class="header-action-btn">← Voltar</button>
+    </main>
+
+    <main id="termsView" class="view hidden info-view">
+      <h1>Termos e Condições</h1>
+      <p>Última atualização: 26/08/2026</p>
+      <p>Bem-vindo ao Nottaz. Ao utilizar nosso aplicativo, você concorda com os seguintes termos e condições. Leia atentamente.</p>
+      <h2>1. Aceitação dos Termos</h2>
+      <p>Ao acessar ou usar o Nottaz, você concorda em cumprir estes termos. Se não concordar, por favor, não utilize o aplicativo.</p>
+      <h2>2. Uso do Serviço</h2>
+      <p>O Nottaz é um aplicativo de notas pessoais. Você é responsável por todo o conteúdo que criar, editar ou armazenar. Não utilize o aplicativo para fins ilegais, difamatórios, ofensivos ou que violem direitos de terceiros.</p>
+      <h2>3. Propriedade Intelectual</h2>
+      <p>O aplicativo Nottaz, incluindo design, código e funcionalidades, é de nossa propriedade. Você não pode copiar, modificar ou distribuir o aplicativo sem autorização.</p>
+      <h2>4. Limitação de Responsabilidade</h2>
+      <p>O Nottaz é fornecido "como está" e "conforme disponível". Não garantimos que o serviço será ininterrupto ou livre de erros. Não nos responsabilizamos por perda de dados, danos diretos ou indiretos resultantes do uso do aplicativo.</p>
+      <h2>5. Armazenamento Local</h2>
+      <p>Suas notas são armazenadas localmente no seu dispositivo. Recomendamos que você faça backups regulares. Não nos responsabilizamos por perda de dados devido a limpeza do navegador, falhas do dispositivo ou outros eventos.</p>
+      <h2>6. Alterações nos Termos</h2>
+      <p>Podemos atualizar estes termos a qualquer momento. As alterações entram em vigor imediatamente após a publicação. O uso contínuo do aplicativo após alterações constitui aceitação dos novos termos.</p>
+      <h2>7. Rescisão</h2>
+      <p>Podemos suspender ou encerrar seu acesso ao aplicativo a qualquer momento, sem aviso prévio, se você violar estes termos.</p>
+      <h2>8. Contato</h2>
+      <p>Para dúvidas sobre estes termos, entre em contato: suportetakka@gmail.com</p>
+      <button id="termsBackBtn" class="header-action-btn">← Voltar</button>
+    </main>
+  </div>
+
+  <div id="editorBottomBar" class="editor-bottom-bar hidden"></div>
+
+  <div id="toast" class="toast">Salvo</div>
+
+  <button id="fabNewNote" class="fab-new-note" aria-label="Nova nota">+</button>
+
+  <div id="confirmModal" class="confirm-overlay hidden">
+    <div class="confirm-box">
+      <p>Deseja excluir essa nota?</p>
+      <div class="confirm-buttons">
+        <button id="confirmNo" class="btn-no">Não</button>
+        <button id="confirmYes" class="btn-yes">Sim, desejo</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="passwordModal" class="confirm-overlay hidden">
+    <div class="confirm-box">
+      <p id="passwordModalText">Insira a senha para criar a nota privada:</p>
+      <input type="password" id="passwordInput" placeholder="Senha" style="width:100%;padding:8px;margin-bottom:12px;border:1px solid var(--border);border-radius:6px;background:var(--surface);color:var(--text);" />
+      <div class="confirm-buttons">
+        <button id="passwordCancel" class="btn-no">Cancelar</button>
+        <button id="passwordConfirm" class="btn-yes">Confirmar</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="settingsModal" class="settings-overlay hidden">
+    <div class="settings-box">
+      <h2>Definições</h2>
+      <div class="setting-group">
+        <div class="setting-label">Tema</div>
+        <div class="theme-options">
+          <button class="theme-option" data-theme-mode="system">Padrão</button>
+          <button class="theme-option" data-theme-mode="dark">Escuro</button>
+          <button class="theme-option" data-theme-mode="light">Claro</button>
+        </div>
+      </div>
+      <div class="setting-group">
+        <div class="setting-label">Idioma</div>
+        <p style="margin:0;">Português</p>
+      </div>
+      <div class="setting-group">
+        <div class="setting-label">Brilho</div>
+        <input type="range" min="0.5" max="1.5" step="0.1" value="1" class="brightness-slider" id="brightnessSlider">
+      </div>
+      <button id="settingsCloseBtn" class="header-action-btn" style="width:100%;text-align:center;">Fechar</button>
+    </div>
+  </div>
+
+  <div id="helpModal" class="settings-overlay hidden">
+    <div class="settings-box">
+      <h2>💡 Como usar o app</h2>
+      <ul style="list-style:none;padding:0;">
+        <li style="margin-bottom:10px;">• Clique no botão <strong>+</strong> para criar uma nova nota.</li>
+        <li style="margin-bottom:10px;">• Escreva o título e o conteúdo. O salvamento é automático.</li>
+        <li style="margin-bottom:10px;">• Use o menu <strong>⋮</strong> para opções como selecionar, importar e compartilhar.</li>
+        <li style="margin-bottom:10px;">• Pressione e segure uma nota para excluí-la.</li>
+        <li style="margin-bottom:10px;">• Na lixeira, você pode recuperar ou excluir definitivamente.</li>
+      </ul>
+      <button id="closeHelpBtn" class="header-action-btn" style="width:100%;text-align:center;margin-top:10px;">Entendi</button>
+    </div>
+  </div>
+
+  <input type="file" id="fileInput" accept=".txt" style="display:none;" />
+
+  <script>
+    (function () {
+      const STORAGE_KEY = 'notas-app-data';
+      const THEME_KEY = 'notas-theme';
+      const BRIGHTNESS_KEY = 'notas-brightness';
+      const THEME_MODE_KEY = 'notas-theme-mode';
+
+      const loadingOverlay = document.getElementById('loadingOverlay');
+      const app = document.getElementById('app');
+      const backButton = document.getElementById('backButton');
+      const viewSubtitle = document.getElementById('viewSubtitle');
+      const menuButton = document.getElementById('menuButton');
+      const dotsButton = document.getElementById('dotsButton');
+      const dotsDropdown = document.getElementById('dotsDropdown');
+      const selectAllBtn = document.getElementById('selectAllBtn');
+      const importBtn = document.getElementById('importBtn');
+      const shareBtn = document.getElementById('shareBtn');
+      const searchButton = document.getElementById('searchButton');
+      const helpButton = document.getElementById('helpButton');
+      const helpModal = document.getElementById('helpModal');
+      const closeHelpBtn = document.getElementById('closeHelpBtn');
+      const fabNewNote = document.getElementById('fabNewNote');
+      const cancelSelectionBtn = document.getElementById('cancelSelectionBtn');
+      const normalModeBtn = document.getElementById('normalModeBtn');
+      const privateModeBtn = document.getElementById('privateModeBtn');
+
+      const headerSaveBtn = document.getElementById('headerSaveBtn');
+      const headerUndoBtn = document.getElementById('headerUndoBtn');
+      const editorMenuContainer = document.getElementById('editorMenuContainer');
+      const editorDotsButton = document.getElementById('editorDotsButton');
+      const editorDotsDropdown = document.getElementById('editorDotsDropdown');
+      const editorShareBtn = document.getElementById('editorShareBtn');
+      const editorCopyBtn = document.getElementById('editorCopyBtn');
+      const editorReadModeBtn = document.getElementById('editorReadModeBtn');
+
+      const sidebar = document.getElementById('sidebar');
+      const sidebarOverlay = document.getElementById('sidebarOverlay');
+      const sidebarClose = document.getElementById('sidebarClose');
+      const menuMinhasNotas = document.getElementById('menuMinhasNotas');
+      const menuDefinicao = document.getElementById('menuDefinicao');
+      const menuPolitica = document.getElementById('menuPolitica');
+      const menuLixeira = document.getElementById('menuLixeira');
+      const menuIdioma = document.getElementById('menuIdioma');
+      const menuCompartilhar = document.getElementById('menuCompartilhar');
+      const menuTermos = document.getElementById('menuTermos');
+
+      const listView = document.getElementById('listView');
+      const editorView = document.getElementById('editorView');
+      const trashView = document.getElementById('trashView');
+      const privacyView = document.getElementById('privacyView');
+      const termsView = document.getElementById('termsView');
+      const privacyBackBtn = document.getElementById('privacyBackBtn');
+      const termsBackBtn = document.getElementById('termsBackBtn');
+
+      const notesList = document.getElementById('notesList');
+      const trashList = document.getElementById('trashList');
+      const searchBar = document.getElementById('searchBar');
+      const searchInput = document.getElementById('searchInput');
+
+      const noteTitle = document.getElementById('noteTitle');
+      const noteContent = document.getElementById('noteContent');
+
+      const confirmModal = document.getElementById('confirmModal');
+      const confirmNo = document.getElementById('confirmNo');
+      const confirmYes = document.getElementById('confirmYes');
+
+      const passwordModal = document.getElementById('passwordModal');
+      const passwordInput = document.getElementById('passwordInput');
+      const passwordCancel = document.getElementById('passwordCancel');
+      const passwordConfirm = document.getElementById('passwordConfirm');
+      const passwordModalText = document.getElementById('passwordModalText');
+
+      const settingsModal = document.getElementById('settingsModal');
+      const settingsCloseBtn = document.getElementById('settingsCloseBtn');
+      const themeOptions = document.querySelectorAll('.theme-option');
+      const brightnessSlider = document.getElementById('brightnessSlider');
+
+      const fileInput = document.getElementById('fileInput');
+      const editorBottomBar = document.getElementById('editorBottomBar');
+      const toast = document.getElementById('toast');
+
+      let notes = [];
+      let currentNoteId = null;
+      let currentView = 'list';
+      let currentMode = 'normal';
+      let theme = 'light';
+      let themeMode = 'dark';
+      let saveTimeout;
+      let undoStack = [];
+      let selectedNotes = new Set();
+      let longPressTimer = null;
+      let pendingDeleteId = null;
+      let isReadMode = false;
+      let pendingCreatePrivate = false;
+      let pendingOpenPrivateId = null;
+      let pendingImportContent = null;
+      let toastTimeout = null;
+
+      function init() {
+        loadPreferences();
+        loadNotes();
+        bindEvents();
+        renderCurrentView();
+        if (window.visualViewport) {
+          visualViewport.addEventListener('resize', adjustEditorBar);
+          adjustEditorBar();
+        }
+        setTimeout(() => {
+          loadingOverlay.style.opacity = '0';
+          setTimeout(() => {
+            loadingOverlay.classList.add('hidden');
+            app.classList.remove('hidden');
+          }, 500);
+        }, 1000);
+      }
+
+      function adjustEditorBar() {
+        if (!editorBottomBar) return;
+        if (window.visualViewport) {
+          const keyboardHeight = window.innerHeight - window.visualViewport.height;
+          editorBottomBar.style.transform = `translateY(-${keyboardHeight}px)`;
+        } else {
+          editorBottomBar.style.transform = 'none';
+        }
+      }
+
+      function showToast(message) {
+        if (!toast) return;
+        toast.textContent = message;
+        toast.classList.add('show');
+        clearTimeout(toastTimeout);
+        toastTimeout = setTimeout(() => {
+          toast.classList.remove('show');
+        }, 2000);
+      }
+
+      function loadPreferences() {
+        const savedThemeMode = localStorage.getItem(THEME_MODE_KEY) || 'dark';
+        themeMode = savedThemeMode;
+        applyThemeMode();
+        const savedBrightness = localStorage.getItem(BRIGHTNESS_KEY) || '1';
+        document.documentElement.style.setProperty('--brightness', savedBrightness);
+        brightnessSlider.value = savedBrightness;
+      }
+
+      function applyThemeMode() {
+        if (themeMode === 'system') {
+          theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        } else {
+          theme = themeMode;
+        }
+        document.documentElement.setAttribute('data-theme', theme);
+      }
+
+      function setThemeMode(mode) {
+        themeMode = mode;
+        localStorage.setItem(THEME_MODE_KEY, mode);
+        applyThemeMode();
+        updateThemeOptionsUI();
+      }
+
+      function updateThemeOptionsUI() {
+        themeOptions.forEach(btn => {
+          btn.classList.toggle('active', btn.dataset.themeMode === themeMode);
+        });
+      }
+
+      function loadNotes() {
+        try {
+          const stored = localStorage.getItem(STORAGE_KEY);
+          notes = stored ? JSON.parse(stored) : [];
+          notes = notes.map(n => ({ ...n, isPrivate: !!n.isPrivate }));
+        } catch {
+          notes = [];
+        }
+        const now = Date.now();
+        const thirtyDays = 30 * 24 * 60 * 60 * 1000;
+        notes = notes.filter(n => {
+          if (n.deleted && n.deletedAt) {
+            return (now - n.deletedAt) < thirtyDays;
+          }
+          return true;
+        });
+        saveNotes();
+      }
+
+      function saveNotes() {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(notes));
+      }
+
+      function escapeHtml(str) {
+        const div = document.createElement('div');
+        div.textContent = str || '';
+        return div.innerHTML;
+      }
+
+      function formatDate(timestamp) {
+        if (!timestamp) return '';
+        return new Date(timestamp).toLocaleString('pt-BR', {
+          day: '2-digit',
+          month: '2-digit',
+          year: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit',
+        });
+      }
+
+      function renderCurrentView() {
+        document.querySelectorAll('.view').forEach((v) => v.classList.add('hidden'));
+        headerSaveBtn.classList.add('hidden');
+        headerUndoBtn.classList.add('hidden');
+        editorMenuContainer.classList.add('hidden');
+        searchButton.classList.remove('hidden');
+        helpButton.classList.remove('hidden');
+        dotsButton.classList.remove('hidden');
+        backButton.classList.add('hidden');
+        menuButton.classList.remove('hidden');
+        editorBottomBar.classList.add('hidden');
+
+        if (currentView === 'list') {
+          listView.classList.remove('hidden');
+          viewSubtitle.textContent = currentMode === 'private' ? 'Notas Privadas' : 'Bem vindo as notas';
+          if (currentMode === 'normal') {
+            normalModeBtn.classList.add('active');
+            privateModeBtn.classList.remove('active');
+          } else {
+            normalModeBtn.classList.remove('active');
+            privateModeBtn.classList.add('active');
+          }
+          renderNotesList(searchInput.value || '');
+          fabNewNote.classList.remove('hidden');
+          if (selectedNotes.size > 0) {
+            cancelSelectionBtn.classList.remove('hidden');
+          } else {
+            cancelSelectionBtn.classList.add('hidden');
+          }
+        } else if (currentView === 'editor') {
+          editorView.classList.remove('hidden');
+          viewSubtitle.textContent = '';
+          renderEditor();
+          fabNewNote.classList.add('hidden');
+          searchButton.classList.add('hidden');
+          helpButton.classList.add('hidden');
+          dotsButton.classList.add('hidden');
+          headerSaveBtn.classList.remove('hidden');
+          headerUndoBtn.classList.remove('hidden');
+          editorMenuContainer.classList.remove('hidden');
+          backButton.classList.remove('hidden');
+          menuButton.classList.add('hidden');
+          editorBottomBar.classList.remove('hidden');
+          adjustEditorBar();
+        } else if (currentView === 'trash') {
+          trashView.classList.remove('hidden');
+          viewSubtitle.textContent = 'Lixeira';
+          renderTrashList();
+          fabNewNote.classList.add('hidden');
+          searchButton.classList.add('hidden');
+          helpButton.classList.add('hidden');
+          dotsButton.classList.add('hidden');
+          menuButton.classList.remove('hidden');
+          backButton.classList.add('hidden');
+        } else if (currentView === 'privacy') {
+          privacyView.classList.remove('hidden');
+          viewSubtitle.textContent = 'Política de Privacidade';
+          fabNewNote.classList.add('hidden');
+          searchButton.classList.add('hidden');
+          helpButton.classList.add('hidden');
+          dotsButton.classList.add('hidden');
+          menuButton.classList.add('hidden');
+          backButton.classList.add('hidden');
+        } else if (currentView === 'terms') {
+          termsView.classList.remove('hidden');
+          viewSubtitle.textContent = 'Termos e Condições';
+          fabNewNote.classList.add('hidden');
+          searchButton.classList.add('hidden');
+          helpButton.classList.add('hidden');
+          dotsButton.classList.add('hidden');
+          menuButton.classList.add('hidden');
+          backButton.classList.add('hidden');
+        }
+
+        dotsDropdown.classList.add('hidden');
+        editorDotsDropdown.classList.add('hidden');
+        sidebar.classList.add('hidden');
+        sidebarOverlay.classList.add('hidden');
+      }
+
+      function switchView(view) {
+        if (currentView === 'editor' && view !== 'editor') {
+          saveCurrentEditor();
+          showToast('Salvo');
+        }
+        currentView = view;
+        renderCurrentView();
+      }
+
+      function renderNotesList(filter = '') {
+        const activeNotes = notes
+          .filter((n) => !n.deleted)
+          .filter((n) => n.isPrivate === (currentMode === 'private'))
+          .filter((n) => (filter ? n.title.toLowerCase().includes(filter.toLowerCase()) : true))
+          .sort((a, b) => b.updatedAt - a.updatedAt);
+
+        if (activeNotes.length === 0) {
+          notesList.innerHTML = `
+            <div class="empty-state">
+              <h3>${currentMode === 'private' ? 'Crie suas notas privadas' : 'Crie suas notas'}</h3>
+              <p>Clique em "+ Nova nota" para começar</p>
+            </div>
+          `;
+        } else {
+          notesList.innerHTML = activeNotes
+            .map((note) => {
+              const title = note.title || 'Sem título';
+              const snippet = (note.content || 'Sem conteúdo').substring(0, 120);
+              const isSelected = selectedNotes.has(note.id) ? ' selected' : '';
+              const privateLabel = note.isPrivate ? ' / nota privada' : '';
+              return `
+                <div class="note-card${isSelected}" data-id="${note.id}">
+                  <h3>${escapeHtml(title)}${privateLabel}</h3>
+                  <p>${escapeHtml(snippet)}</p>
+                  <span class="note-date">${formatDate(note.updatedAt)}</span>
+                </div>
+              `;
+            })
+            .join('');
+        }
+
+        if (selectedNotes.size > 0) {
+          cancelSelectionBtn.classList.remove('hidden');
+        } else {
+          cancelSelectionBtn.classList.add('hidden');
+        }
+      }
+
+      function renderEditor() {
+        const note = notes.find((n) => n.id === currentNoteId);
+        if (!note) return;
+        noteTitle.value = note.title || '';
+        noteContent.value = note.content || '';
+        undoStack = [];
+        if (isReadMode) {
+          noteTitle.readOnly = true;
+          noteContent.readOnly = true;
+          noteTitle.style.opacity = '0.7';
+          noteContent.style.opacity = '0.7';
+        } else {
+          noteTitle.readOnly = false;
+          noteContent.readOnly = false;
+          noteTitle.style.opacity = '1';
+          noteContent.style.opacity = '1';
+        }
+        if (!isReadMode) {
+          setTimeout(() => noteContent.focus(), 100);
+        }
+      }
+
+      function renderTrashList() {
+        const deletedNotes = notes
+          .filter((n) => n.deleted)
+          .sort((a, b) => (b.deletedAt || 0) - (a.deletedAt || 0));
+
+        if (deletedNotes.length === 0) {
+          trashList.innerHTML = `
+            <div class="empty-state">
+              <h3>Lixeira vazia</h3>
+              <p>As notas excluídas aparecerão aqui</p>
+            </div>
+          `;
+          return;
+        }
+
+        trashList.innerHTML = deletedNotes
+          .map((note) => {
+            const title = note.title || 'Sem título';
+            const snippet = (note.content || 'Sem conteúdo').substring(0, 120);
+            const privateLabel = note.isPrivate ? ' / nota privada' : '';
+            return `
+              <div class="note-card trash-card" data-id="${note.id}">
+                <h3>${escapeHtml(title)}${privateLabel}</h3>
+                <p>${escapeHtml(snippet)}</p>
+                <span class="note-date">Excluída em ${formatDate(note.deletedAt)}</span>
+                <div class="trash-actions" style="display:flex;gap:8px;margin-top:12px;">
+                  <button class="restore-btn" data-id="${note.id}">Recuperar</button>
+                  <button class="delete-btn" data-id="${note.id}">Excluir definitivamente</button>
+                </div>
+              </div>
+            `;
+          })
+          .join('');
+      }
+
+      function newNote() {
+        if (currentMode === 'private') {
+          pendingCreatePrivate = true;
+          passwordModalText.textContent = 'Defina uma senha para esta nota privada:';
+          passwordInput.value = '';
+          passwordModal.classList.remove('hidden');
+        } else {
+          createNewNote(false, null);
+        }
+      }
+
+      function createNewNote(isPrivate, password) {
+        const note = {
+          id: Date.now().toString(),
+          title: '',
+          content: '',
+          deleted: false,
+          deletedAt: null,
+          createdAt: Date.now(),
+          updatedAt: Date.now(),
+          isPrivate: isPrivate,
+          password: password || null
+        };
+        notes.push(note);
+        saveNotes();
+        currentNoteId = note.id;
+        isReadMode = false;
+        switchView('editor');
+      }
+
+      function openEditor(noteId) {
+        const note = notes.find(n => n.id === noteId);
+        if (note && note.isPrivate) {
+          pendingOpenPrivateId = noteId;
+          passwordModalText.textContent = 'Insira a senha para abrir esta nota privada:';
+          passwordInput.value = '';
+          passwordModal.classList.remove('hidden');
+        } else {
+          currentNoteId = noteId;
+          isReadMode = false;
+          switchView('editor');
+        }
+      }
+
+      function verifyPassword() {
+        const password = passwordInput.value.trim();
+        if (!password) {
+          alert('A senha não pode estar vazia!');
+          return;
+        }
+        if (pendingCreatePrivate) {
+          createNewNote(true, password);
+          pendingCreatePrivate = false;
+          passwordModal.classList.add('hidden');
+          switchView('editor');
+        } else if (pendingOpenPrivateId) {
+          const note = notes.find(n => n.id === pendingOpenPrivateId);
+          if (note && note.password === password) {
+            currentNoteId = note.id;
+            isReadMode = false;
+            switchView('editor');
+          } else {
+            alert('Senha incorreta!');
+          }
+          pendingOpenPrivateId = null;
+          passwordModal.classList.add('hidden');
+        } else if (pendingImportContent) {
+          const note = {
+            id: Date.now().toString(),
+            title: pendingImportContent.title,
+            content: pendingImportContent.content,
+            deleted: false,
+            deletedAt: null,
+            createdAt: Date.now(),
+            updatedAt: Date.now(),
+            isPrivate: true,
+            password: password
+          };
+          notes.push(note);
+          saveNotes();
+          pendingImportContent = null;
+          passwordModal.classList.add('hidden');
+          renderNotesList(searchInput.value || '');
+        }
+      }
+
+      function cancelPasswordModal() {
+        pendingCreatePrivate = false;
+        pendingOpenPrivateId = null;
+        pendingImportContent = null;
+        passwordModal.classList.add('hidden');
+      }
+
+      function saveCurrentEditor() {
+        if (currentNoteId === null) return;
+        const note = notes.find((n) => n.id === currentNoteId);
+        if (!note) return;
+        note.title = noteTitle.value.trim();
+        note.content = noteContent.value;
+        note.updatedAt = Date.now();
+        saveNotes();
+      }
+
+      function undoLastChar() {
+        if (undoStack.length > 0) {
+          const previous = undoStack.pop();
+          noteContent.value = previous;
+          const note = notes.find((n) => n.id === currentNoteId);
+          if (note) {
+            note.content = previous;
+            note.updatedAt = Date.now();
+            saveNotes();
+          }
+        }
+      }
+
+      function softDeleteNote(noteId) {
+        pendingDeleteId = noteId;
+        confirmModal.classList.remove('hidden');
+      }
+
+      function performDelete() {
+        if (pendingDeleteId) {
+          const note = notes.find((n) => n.id === pendingDeleteId);
+          if (note) {
+            note.deleted = true;
+            note.deletedAt = Date.now();
+            saveNotes();
+            renderNotesList(searchInput.value || '');
+            renderTrashList();
+          }
+          pendingDeleteId = null;
+          confirmModal.classList.add('hidden');
+          selectedNotes.clear();
+          cancelSelectionBtn.classList.add('hidden');
+        }
+      }
+
+      function restoreNote(noteId) {
+        const note = notes.find((n) => n.id === noteId);
+        if (note) {
+          note.deleted = false;
+          note.deletedAt = null;
+          note.updatedAt = Date.now();
+          saveNotes();
+          renderNotesList(searchInput.value || '');
+          renderTrashList();
+        }
+      }
+
+      function permanentlyDeleteNote(noteId) {
+        notes = notes.filter((n) => n.id !== noteId);
+        saveNotes();
+        renderNotesList(searchInput.value || '');
+        renderTrashList();
+      }
+
+      function selectAllNotes() {
+        const active = notes.filter((n) => !n.deleted && n.isPrivate === (currentMode === 'private'));
+        if (selectedNotes.size === active.length) {
+          selectedNotes.clear();
+        } else {
+          active.forEach(n => selectedNotes.add(n.id));
+        }
+        renderNotesList(searchInput.value || '');
+      }
+
+      function cancelSelection() {
+        selectedNotes.clear();
+        renderNotesList(searchInput.value || '');
+        cancelSelectionBtn.classList.add('hidden');
+      }
+
+      function importTextFile(file) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const content = e.target.result;
+          const title = file.name.replace(/\.txt$/, '') || 'Nota importada';
+          if (currentMode === 'private') {
+            pendingCreatePrivate = true;
+            pendingImportContent = { title, content };
+            passwordModalText.textContent = 'Defina uma senha para esta nota privada importada:';
+            passwordInput.value = '';
+            passwordModal.classList.remove('hidden');
+          } else {
+            const note = {
+              id: Date.now().toString(),
+              title: title,
+              content: content.substring(0, 100000),
+              deleted: false,
+              deletedAt: null,
+              createdAt: Date.now(),
+              updatedAt: Date.now(),
+              isPrivate: false,
+              password: null
+            };
+            notes.push(note);
+            saveNotes();
+            renderNotesList(searchInput.value || '');
+          }
+        };
+        reader.readAsText(file);
+      }
+
+      function shareApp() {
+        if (navigator.share) {
+          navigator.share({
+            title: 'Nottaz',
+            text: 'Experimente o Nottaz para organizar suas notas!',
+            url: window.location.href
+          }).catch(() => {});
+        } else {
+          alert('Compartilhamento não suportado neste dispositivo/navegador.');
+        }
+      }
+
+      function shareNotes() {
+        const notesToShare = selectedNotes.size > 0 ? notes.filter(n => selectedNotes.has(n.id) && !n.deleted) : notes.filter(n => !n.deleted);
+        if (notesToShare.length === 0) {
+          alert('Nenhuma nota para compartilhar.');
+          return;
+        }
+        const text = notesToShare.map(n => `Título: ${n.title}\n${n.content}\n---`).join('\n');
+        if (navigator.share) {
+          navigator.share({ title: 'Minhas notas', text: text }).catch(() => {});
+        } else {
+          alert('Compartilhamento não suportado neste dispositivo/navegador.');
+        }
+      }
+
+      function shareCurrentNote() {
+        if (currentNoteId === null) return;
+        const note = notes.find(n => n.id === currentNoteId);
+        if (note) {
+          const text = `Título: ${note.title}\n${note.content}`;
+          if (navigator.share) {
+            navigator.share({ title: note.title || 'Nota', text: text }).catch(() => {});
+          } else {
+            alert('Compartilhamento não suportado neste dispositivo/navegador.');
+          }
+        }
+      }
+
+      function copyCurrentNote() {
+        if (currentNoteId === null) return;
+        const note = notes.find(n => n.id === currentNoteId);
+        if (note) {
+          const text = `Título: ${note.title}\n${note.content}`;
+          if (navigator.clipboard) {
+            navigator.clipboard.writeText(text).then(() => alert('Conteúdo copiado!')).catch(() => {});
+          } else {
+            alert('Copiar não suportado.');
+          }
+        }
+      }
+
+      function toggleReadMode() {
+        isReadMode = !isReadMode;
+        renderEditor();
+        editorDotsDropdown.classList.add('hidden');
+      }
+
+      function bindEvents() {
+        menuButton.addEventListener('click', () => {
+          sidebar.classList.toggle('hidden');
+          sidebarOverlay.classList.toggle('hidden');
+        });
+        sidebarClose.addEventListener('click', () => {
+          sidebar.classList.add('hidden');
+          sidebarOverlay.classList.add('hidden');
+        });
+        sidebarOverlay.addEventListener('click', () => {
+          sidebar.classList.add('hidden');
+          sidebarOverlay.classList.add('hidden');
+        });
+
+        menuMinhasNotas.addEventListener('click', () => { switchView('list'); });
+        menuDefinicao.addEventListener('click', () => {
+          settingsModal.classList.remove('hidden');
+          updateThemeOptionsUI();
+          sidebar.classList.add('hidden');
+          sidebarOverlay.classList.add('hidden');
+        });
+        menuPolitica.addEventListener('click', () => {
+          switchView('privacy');
+          sidebar.classList.add('hidden');
+          sidebarOverlay.classList.add('hidden');
+        });
+        menuLixeira.addEventListener('click', () => { switchView('trash'); });
+        menuIdioma.addEventListener('click', () => { /* nada */ });
+        menuCompartilhar.addEventListener('click', () => { shareApp(); });
+        menuTermos.addEventListener('click', () => {
+          switchView('terms');
+          sidebar.classList.add('hidden');
+          sidebarOverlay.classList.add('hidden');
+        });
+
+        normalModeBtn.addEventListener('click', () => {
+          if (currentMode !== 'normal') {
+            currentMode = 'normal';
+            selectedNotes.clear();
+            cancelSelectionBtn.classList.add('hidden');
+            renderCurrentView();
+          }
+        });
+
+        privateModeBtn.addEventListener('click', () => {
+          if (currentMode !== 'private') {
+            currentMode = 'private';
+            selectedNotes.clear();
+            cancelSelectionBtn.classList.add('hidden');
+            renderCurrentView();
+          }
+        });
+
+        dotsButton.addEventListener('click', (e) => {
+          e.stopPropagation();
+          dotsDropdown.classList.toggle('hidden');
+        });
+        document.addEventListener('click', (e) => {
+          if (!dotsDropdown.contains(e.target) && !dotsButton.contains(e.target)) {
+            dotsDropdown.classList.add('hidden');
+          }
+          if (!editorDotsDropdown.contains(e.target) && !editorDotsButton.contains(e.target)) {
+            editorDotsDropdown.classList.add('hidden');
+          }
+        });
+
+        selectAllBtn.addEventListener('click', () => {
+          selectAllNotes();
+          dotsDropdown.classList.add('hidden');
+        });
+        importBtn.addEventListener('click', () => {
+          fileInput.click();
+          dotsDropdown.classList.add('hidden');
+        });
+        shareBtn.addEventListener('click', () => {
+          shareNotes();
+          dotsDropdown.classList.add('hidden');
+        });
+
+        editorDotsButton.addEventListener('click', (e) => {
+          e.stopPropagation();
+          editorDotsDropdown.classList.toggle('hidden');
+        });
+        editorShareBtn.addEventListener('click', () => {
+          shareCurrentNote();
+          editorDotsDropdown.classList.add('hidden');
+        });
+        editorCopyBtn.addEventListener('click', () => {
+          copyCurrentNote();
+          editorDotsDropdown.classList.add('hidden');
+        });
+        editorReadModeBtn.addEventListener('click', () => {
+          toggleReadMode();
+          editorDotsDropdown.classList.add('hidden');
+        });
+
+        searchButton.addEventListener('click', () => {
+          searchBar.classList.toggle('hidden');
+          if (!searchBar.classList.contains('hidden')) searchInput.focus();
+        });
+        searchInput.addEventListener('input', () => {
+          renderNotesList(searchInput.value);
+        });
+
+        fabNewNote.addEventListener('click', newNote);
+        cancelSelectionBtn.addEventListener('click', cancelSelection);
+
+        backButton.addEventListener('click', () => {
+          if (currentView === 'editor' || currentView === 'trash') {
+            switchView('list');
+          }
+        });
+
+        headerSaveBtn.addEventListener('click', () => {
+          saveCurrentEditor();
+          showToast('Salvo');
+        });
+        headerUndoBtn.addEventListener('click', undoLastChar);
+
+        privacyBackBtn.addEventListener('click', () => switchView('list'));
+        termsBackBtn.addEventListener('click', () => switchView('list'));
+
+        helpButton.addEventListener('click', () => {
+          helpModal.classList.remove('hidden');
+        });
+        closeHelpBtn.addEventListener('click', () => {
+          helpModal.classList.add('hidden');
+        });
+
+        notesList.addEventListener('click', (e) => {
+          const card = e.target.closest('.note-card');
+          if (card) {
+            if (selectedNotes.size > 0) {
+              const id = card.dataset.id;
+              if (selectedNotes.has(id)) selectedNotes.delete(id);
+              else selectedNotes.add(id);
+              renderNotesList(searchInput.value || '');
+            } else {
+              openEditor(card.dataset.id);
+            }
+          }
+        });
+
+        notesList.addEventListener('mousedown', startLongPress);
+        notesList.addEventListener('mouseup', cancelLongPress);
+        notesList.addEventListener('mouseleave', cancelLongPress);
+        notesList.addEventListener('touchstart', startLongPress);
+        notesList.addEventListener('touchend', cancelLongPress);
+        notesList.addEventListener('touchmove', cancelLongPress);
+
+        function startLongPress(e) {
+          const card = e.target.closest('.note-card');
+          if (!card) return;
+          longPressTimer = setTimeout(() => {
+            const noteId = card.dataset.id;
+            softDeleteNote(noteId);
+          }, 600);
+        }
+        function cancelLongPress() {
+          clearTimeout(longPressTimer);
+        }
+
+        confirmNo.addEventListener('click', () => {
+          confirmModal.classList.add('hidden');
+          pendingDeleteId = null;
+        });
+        confirmYes.addEventListener('click', performDelete);
+
+        passwordCancel.addEventListener('click', cancelPasswordModal);
+        passwordConfirm.addEventListener('click', verifyPassword);
+
+        fileInput.addEventListener('change', (e) => {
+          if (e.target.files.length > 0) {
+            importTextFile(e.target.files[0]);
+            fileInput.value = '';
+          }
+        });
+
+        trashList.addEventListener('click', (e) => {
+          const restoreBtn = e.target.closest('.restore-btn');
+          if (restoreBtn) {
+            restoreNote(restoreBtn.dataset.id);
+            return;
+          }
+          const deleteBtn = e.target.closest('.delete-btn');
+          if (deleteBtn) {
+            permanentlyDeleteNote(deleteBtn.dataset.id);
+          }
+        });
+
+        noteTitle.addEventListener('input', () => {
+          const note = notes.find((n) => n.id === currentNoteId);
+          if (note && !isReadMode) {
+            note.title = noteTitle.value.trim();
+            note.updatedAt = Date.now();
+            saveNotes();
+          }
+        });
+
+        noteContent.addEventListener('input', () => {
+          if (isReadMode) return;
+          undoStack.push(noteContent.value);
+          if (undoStack.length > 50) undoStack.shift();
+          const note = notes.find((n) => n.id === currentNoteId);
+          if (note) {
+            note.content = noteContent.value;
+            note.updatedAt = Date.now();
+            saveNotes();
+          }
+        });
+
+        window.addEventListener('beforeunload', () => {
+          if (currentView === 'editor') saveCurrentEditor();
+        });
+        document.addEventListener('visibilitychange', () => {
+          if (document.visibilityState === 'hidden' && currentView === 'editor') {
+            saveCurrentEditor();
+            showToast('Salvo');
+          }
+        });
+
+        themeOptions.forEach(btn => {
+          btn.addEventListener('click', () => {
+            setThemeMode(btn.dataset.themeMode);
+          });
+        });
+        brightnessSlider.addEventListener('input', () => {
+          const val = brightnessSlider.value;
+          document.documentElement.style.setProperty('--brightness', val);
+          localStorage.setItem(BRIGHTNESS_KEY, val);
+        });
+        settingsCloseBtn.addEventListener('click', () => {
+          settingsModal.classList.add('hidden');
+        });
+      }
+
+      init();
+    })();
+  </script>
+</body>
+</html>
