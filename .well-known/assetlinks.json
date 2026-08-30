@@ -1,0 +1,8 @@
+[{
+      "relation": ["delegate_permission/common.handle_all_urls"],
+      "target": {
+        "namespace": "android_app",
+        "package_name": "io.github.suportetakka.twa",
+        "sha256_cert_fingerprints": ["B5:37:E1:BC:A8:27:41:8D:F6:46:2B:D8:A9:8E:85:8B:6C:60:4F:BB:DF:3C:C9:2E:18:23:12:4F:30:B6:2B:02"]
+      }
+    }]
