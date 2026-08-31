@@ -148,7 +148,7 @@
     .app {
       max-width: 860px;
       margin: 0 auto;
-      padding: 0 16px 100px;
+      padding: 0 16px;
       position: relative;
       height: 100%;
       min-height: 0;
@@ -729,6 +729,8 @@
       flex: 1 1 auto;
       height: auto;
       min-height: 0;
+      padding: 0;
+      margin: 0;
       overflow: hidden;
     }
 
@@ -756,16 +758,6 @@
 
     .note-content-input:focus {
       opacity: 1;
-    }
-
-    .editor-bottom-divider {
-      flex: 0 0 1px;
-      width: 100%;
-      height: 1px;
-      margin: 0;
-      background: #222;
-      border: 0;
-      pointer-events: none;
     }
 
     .confirm-overlay,
@@ -1111,7 +1103,6 @@
     <main id="editorView" class="view hidden">
       <input id="noteTitle" class="note-title-input" type="text" placeholder="Título da nota" maxlength="200" />
       <textarea id="noteContent" class="note-content-input" placeholder="O que está pensando..." maxlength="100000"></textarea>
-      <div class="editor-bottom-divider" aria-hidden="true"></div>
     </main>
 
     <main id="trashView" class="view hidden">
