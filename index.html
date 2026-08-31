@@ -26,7 +26,7 @@
 </script>
   <link rel="manifest" href="manifest.json">
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, interactive-widget=resizes-content" />
   <title>Nottaz</title>
   <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
 <meta name="theme-color" content="#f4f6f9" media="(prefers-color-scheme: light)">
@@ -110,6 +110,7 @@
       background: var(--bg);
       color: var(--text);
       min-height: 100vh;
+      min-height: 100dvh;
       transition: background 0.3s, color 0.3s, filter 0.3s;
       -webkit-font-smoothing: antialiased;
       user-select: none;
@@ -147,6 +148,7 @@
       padding: 0 16px 100px;
       position: relative;
       min-height: 100vh;
+      min-height: 100dvh;
       display: flex;
       flex-direction: column;
     }
@@ -164,7 +166,7 @@
       box-shadow: var(--shadow);
       position: sticky;
       top: 0;
-      z-index: 50;
+      z-index: 999;
       transition: background 0.3s, border-color 0.3s;
       flex-shrink: 0;
     }
@@ -517,9 +519,9 @@
 
     .fab-new-note {
       position: fixed;
-      bottom: 100px;
-      left: 24px;
-      z-index: 100;
+      bottom: 20px;
+      left: 20px;
+      z-index: 1000;
       background: var(--fab-bg);
       color: var(--fab-text);
       border: none;
@@ -528,7 +530,7 @@
       height: 56px;
       font-size: 24px;
       font-weight: 600;
-      display: flex;
+      display: none;
       align-items: center;
       justify-content: center;
       cursor: pointer;
@@ -537,6 +539,10 @@
       opacity: 0.95;
       -webkit-tap-highlight-color: transparent;
       outline: none;
+    }
+
+    .fab-new-note.is-visible {
+      display: flex;
     }
 
     .fab-new-note:hover {
@@ -550,14 +556,22 @@
       transform: scale(0.95);
     }
 
-    .cancel-selection-btn {
+    .selection-actions {
       position: fixed;
       top: 90px;
       left: 24px;
       z-index: 90;
-      background: rgba(0,0,0,0.6);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .cancel-selection-btn,
+    .delete-selected-btn {
+      position: static;
+      background: rgba(0,0,0,0.75);
       color: white;
-      border: none;
+      border: 1px solid rgba(255,255,255,0.18);
       border-radius: 20px;
       padding: 8px 16px;
       font-size: 0.9rem;
@@ -572,6 +586,15 @@
       word-spacing: normal !important;
     }
 
+    .delete-selected-btn {
+      background: var(--danger);
+      border-color: transparent;
+    }
+
+    .delete-selected-btn:hover {
+      background: var(--danger-hover);
+    }
+
     .notes-list {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
@@ -580,7 +603,8 @@
     }
 
     .note-card {
-      background: var(--surface);
+      background: #000000;
+      color: #ffffff;
       backdrop-filter: var(--blur);
       -webkit-backdrop-filter: var(--blur);
       border: 1px solid var(--accent-yellow-soft);
@@ -609,6 +633,7 @@
     }
 
     .note-card h3 {
+      color: #ffffff;
       font-size: 1rem;
       font-weight: 600;
       margin-bottom: 6px;
@@ -620,7 +645,7 @@
     }
 
     .note-card p {
-      color: var(--text-secondary);
+      color: rgba(255, 255, 255, 0.76);
       font-size: 0.85rem;
       margin-bottom: 10px;
       word-break: break-word;
@@ -633,7 +658,7 @@
 
     .note-date {
       font-size: 0.7rem;
-      color: var(--text-secondary);
+      color: rgba(255, 255, 255, 0.62);
       opacity: 0.7;
       letter-spacing: normal !important;
     }
@@ -673,8 +698,10 @@
       padding: 12px 16px;
       font-size: 1.3rem;
       border: none;
-      border-bottom: 1px solid var(--accent-yellow-soft);
-      background: transparent;
+      background: var(--bg);
+      position: sticky;
+      top: 0;
+      z-index: 5;
       color: var(--text);
       margin-bottom: 8px;
       outline: none;
@@ -693,9 +720,15 @@
       opacity: 1;
     }
 
+    #editorView {
+      min-height: 0;
+      overflow: hidden;
+    }
+
     .note-content-input {
       width: 100%;
-      flex: 1;
+      flex: 1 1 auto;
+      height: 100%;
       min-height: 0;
       padding: 12px 16px;
       font-size: 0.95rem;
@@ -716,18 +749,6 @@
 
     .note-content-input:focus {
       opacity: 1;
-    }
-
-    .editor-bottom-bar {
-      position: fixed;
-      bottom: var(--editor-bar-bottom);
-      left: 0;
-      width: 100%;
-      height: 1px;
-      background-color: var(--editor-bar-color);
-      z-index: 10;
-      transition: transform 0.2s ease, background-color 0.3s;
-      pointer-events: none;
     }
 
     .confirm-overlay,
@@ -990,8 +1011,6 @@
       }
 
       .fab-new-note {
-        bottom: 80px;
-        left: 16px;
         width: 50px;
         height: 50px;
         font-size: 20px;
@@ -1058,7 +1077,10 @@
       <input type="text" id="searchInput" placeholder="Buscar por título..." />
     </div>
 
-    <button id="cancelSelectionBtn" class="cancel-selection-btn hidden">← Cancelar seleção</button>
+    <div id="selectionActions" class="selection-actions hidden">
+      <button id="cancelSelectionBtn" class="cancel-selection-btn">← Cancelar seleção</button>
+      <button id="deleteSelectedBtn" class="delete-selected-btn">Excluir selecionadas</button>
+    </div>
 
     <main id="listView" class="view">
       <div class="view-header mode-switch-container">
@@ -1126,8 +1148,6 @@
       <button id="termsBackBtn" class="header-action-btn">← Voltar</button>
     </main>
   </div>
-
-  <div id="editorBottomBar" class="editor-bottom-bar hidden"></div>
 
   <div id="toast" class="toast">Salvo</div>
 
@@ -1215,7 +1235,9 @@
       const helpModal = document.getElementById('helpModal');
       const closeHelpBtn = document.getElementById('closeHelpBtn');
       const fabNewNote = document.getElementById('fabNewNote');
+      const selectionActions = document.getElementById('selectionActions');
       const cancelSelectionBtn = document.getElementById('cancelSelectionBtn');
+      const deleteSelectedBtn = document.getElementById('deleteSelectedBtn');
       const normalModeBtn = document.getElementById('normalModeBtn');
       const privateModeBtn = document.getElementById('privateModeBtn');
 
@@ -1258,6 +1280,7 @@
       const confirmModal = document.getElementById('confirmModal');
       const confirmNo = document.getElementById('confirmNo');
       const confirmYes = document.getElementById('confirmYes');
+      const confirmMessage = confirmModal.querySelector('p');
 
       const passwordModal = document.getElementById('passwordModal');
       const passwordInput = document.getElementById('passwordInput');
@@ -1271,7 +1294,6 @@
       const brightnessSlider = document.getElementById('brightnessSlider');
 
       const fileInput = document.getElementById('fileInput');
-      const editorBottomBar = document.getElementById('editorBottomBar');
       const toast = document.getElementById('toast');
 
       let notes = [];
@@ -1282,10 +1304,12 @@
       let themeMode = 'dark';
       let saveTimeout;
       let undoStack = [];
+      let undoDebounceTimer = null;
       let selectedNotes = new Set();
       let longPressTimer = null;
-      let pendingDeleteId = null;
+      let pendingDeleteIds = [];
       let isReadMode = false;
+      let appReady = false;
       let pendingCreatePrivate = false;
       let pendingOpenPrivateId = null;
       let pendingImportContent = null;
@@ -1296,27 +1320,17 @@
         loadNotes();
         bindEvents();
         renderCurrentView();
-        if (window.visualViewport) {
-          visualViewport.addEventListener('resize', adjustEditorBar);
-          adjustEditorBar();
-        }
         setTimeout(() => {
           loadingOverlay.style.opacity = '0';
           setTimeout(() => {
             loadingOverlay.classList.add('hidden');
             app.classList.remove('hidden');
+            requestAnimationFrame(() => {
+              appReady = true;
+              renderCurrentView();
+            });
           }, 500);
         }, 1000);
-      }
-
-      function adjustEditorBar() {
-        if (!editorBottomBar) return;
-        if (window.visualViewport) {
-          const keyboardHeight = window.innerHeight - window.visualViewport.height;
-          editorBottomBar.style.transform = `translateY(-${keyboardHeight}px)`;
-        } else {
-          editorBottomBar.style.transform = 'none';
-        }
       }
 
       function showToast(message) {
@@ -1327,6 +1341,11 @@
         toastTimeout = setTimeout(() => {
           toast.classList.remove('show');
         }, 2000);
+      }
+
+      function updateSelectionActions() {
+        const shouldShow = currentView === 'list' && selectedNotes.size > 0;
+        selectionActions.classList.toggle('hidden', !shouldShow);
       }
 
       function loadPreferences() {
@@ -1380,7 +1399,12 @@
       }
 
       function saveNotes() {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(notes));
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(notes));
+        } catch (error) {
+          console.error('Não foi possível salvar as notas:', error);
+          showToast('Não foi possível salvar as notas. Armazenamento cheio.');
+        }
       }
 
       function escapeHtml(str) {
@@ -1410,7 +1434,7 @@
         dotsButton.classList.remove('hidden');
         backButton.classList.add('hidden');
         menuButton.classList.remove('hidden');
-        editorBottomBar.classList.add('hidden');
+        fabNewNote.classList.remove('is-visible');
 
         if (currentView === 'list') {
           listView.classList.remove('hidden');
@@ -1423,17 +1447,11 @@
             privateModeBtn.classList.add('active');
           }
           renderNotesList(searchInput.value || '');
-          fabNewNote.classList.remove('hidden');
-          if (selectedNotes.size > 0) {
-            cancelSelectionBtn.classList.remove('hidden');
-          } else {
-            cancelSelectionBtn.classList.add('hidden');
-          }
+          fabNewNote.classList.toggle('is-visible', appReady);
         } else if (currentView === 'editor') {
           editorView.classList.remove('hidden');
           viewSubtitle.textContent = '';
           renderEditor();
-          fabNewNote.classList.add('hidden');
           searchButton.classList.add('hidden');
           helpButton.classList.add('hidden');
           dotsButton.classList.add('hidden');
@@ -1442,13 +1460,10 @@
           editorMenuContainer.classList.remove('hidden');
           backButton.classList.remove('hidden');
           menuButton.classList.add('hidden');
-          editorBottomBar.classList.remove('hidden');
-          adjustEditorBar();
         } else if (currentView === 'trash') {
           trashView.classList.remove('hidden');
           viewSubtitle.textContent = 'Lixeira';
           renderTrashList();
-          fabNewNote.classList.add('hidden');
           searchButton.classList.add('hidden');
           helpButton.classList.add('hidden');
           dotsButton.classList.add('hidden');
@@ -1457,7 +1472,6 @@
         } else if (currentView === 'privacy') {
           privacyView.classList.remove('hidden');
           viewSubtitle.textContent = 'Política de Privacidade';
-          fabNewNote.classList.add('hidden');
           searchButton.classList.add('hidden');
           helpButton.classList.add('hidden');
           dotsButton.classList.add('hidden');
@@ -1466,7 +1480,6 @@
         } else if (currentView === 'terms') {
           termsView.classList.remove('hidden');
           viewSubtitle.textContent = 'Termos e Condições';
-          fabNewNote.classList.add('hidden');
           searchButton.classList.add('hidden');
           helpButton.classList.add('hidden');
           dotsButton.classList.add('hidden');
@@ -1478,6 +1491,7 @@
         editorDotsDropdown.classList.add('hidden');
         sidebar.classList.add('hidden');
         sidebarOverlay.classList.add('hidden');
+        updateSelectionActions();
       }
 
       function switchView(view) {
@@ -1521,11 +1535,7 @@
             .join('');
         }
 
-        if (selectedNotes.size > 0) {
-          cancelSelectionBtn.classList.remove('hidden');
-        } else {
-          cancelSelectionBtn.classList.add('hidden');
-        }
+        updateSelectionActions();
       }
 
       function renderEditor() {
@@ -1533,7 +1543,8 @@
         if (!note) return;
         noteTitle.value = note.title || '';
         noteContent.value = note.content || '';
-        undoStack = [];
+        clearTimeout(undoDebounceTimer);
+        undoStack = [note.content || ''];
         if (isReadMode) {
           noteTitle.readOnly = true;
           noteContent.readOnly = true;
@@ -1689,37 +1700,51 @@
       }
 
       function undoLastChar() {
-        if (undoStack.length > 0) {
-          const previous = undoStack.pop();
-          noteContent.value = previous;
-          const note = notes.find((n) => n.id === currentNoteId);
-          if (note) {
-            note.content = previous;
-            note.updatedAt = Date.now();
-            saveNotes();
-          }
+        clearTimeout(undoDebounceTimer);
+        if (undoStack.length > 1 && noteContent.value === undoStack[undoStack.length - 1]) {
+          undoStack.pop();
+        }
+        const previous = undoStack[undoStack.length - 1];
+        if (previous === undefined || previous === noteContent.value) return;
+        noteContent.value = previous;
+        const note = notes.find((n) => n.id === currentNoteId);
+        if (note) {
+          note.content = previous;
+          note.updatedAt = Date.now();
+          saveNotes();
         }
       }
 
       function softDeleteNote(noteId) {
-        pendingDeleteId = noteId;
+        pendingDeleteIds = [noteId];
+        confirmMessage.textContent = 'Deseja excluir essa nota?';
+        confirmModal.classList.remove('hidden');
+      }
+
+      function deleteSelectedNotes() {
+        const ids = [...selectedNotes];
+        if (ids.length === 0) return;
+        pendingDeleteIds = ids;
+        confirmMessage.textContent = `Deseja excluir ${ids.length} notas selecionadas?`;
         confirmModal.classList.remove('hidden');
       }
 
       function performDelete() {
-        if (pendingDeleteId) {
-          const note = notes.find((n) => n.id === pendingDeleteId);
-          if (note) {
-            note.deleted = true;
-            note.deletedAt = Date.now();
-            saveNotes();
-            renderNotesList(searchInput.value || '');
-            renderTrashList();
-          }
-          pendingDeleteId = null;
+        if (pendingDeleteIds.length > 0) {
+          const deletedAt = Date.now();
+          notes.forEach((note) => {
+            if (pendingDeleteIds.includes(note.id)) {
+              note.deleted = true;
+              note.deletedAt = deletedAt;
+            }
+          });
+          saveNotes();
+          renderNotesList(searchInput.value || '');
+          renderTrashList();
+          pendingDeleteIds = [];
           confirmModal.classList.add('hidden');
           selectedNotes.clear();
-          cancelSelectionBtn.classList.add('hidden');
+          updateSelectionActions();
         }
       }
 
@@ -1755,7 +1780,7 @@
       function cancelSelection() {
         selectedNotes.clear();
         renderNotesList(searchInput.value || '');
-        cancelSelectionBtn.classList.add('hidden');
+        updateSelectionActions();
       }
 
       function importTextFile(file) {
@@ -1808,10 +1833,19 @@
           return;
         }
         const text = notesToShare.map(n => `Título: ${n.title}\n${n.content}\n---`).join('\n');
+        const copyAsFallback = () => {
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(text)
+              .then(() => showToast('Notas copiadas!'))
+              .catch(() => alert('Não foi possível copiar as notas.'));
+          } else {
+            alert('Compartilhamento e cópia não são suportados neste dispositivo/navegador.');
+          }
+        };
         if (navigator.share) {
-          navigator.share({ title: 'Minhas notas', text: text }).catch(() => {});
+          navigator.share({ title: 'Minhas notas', text: text }).catch(copyAsFallback);
         } else {
-          alert('Compartilhamento não suportado neste dispositivo/navegador.');
+          copyAsFallback();
         }
       }
 
@@ -1953,6 +1987,7 @@
 
         fabNewNote.addEventListener('click', newNote);
         cancelSelectionBtn.addEventListener('click', cancelSelection);
+        deleteSelectedBtn.addEventListener('click', deleteSelectedNotes);
 
         backButton.addEventListener('click', () => {
           if (currentView === 'editor' || currentView === 'trash') {
@@ -2011,12 +2046,19 @@
 
         confirmNo.addEventListener('click', () => {
           confirmModal.classList.add('hidden');
-          pendingDeleteId = null;
+          pendingDeleteIds = [];
+          confirmMessage.textContent = 'Deseja excluir essa nota?';
         });
         confirmYes.addEventListener('click', performDelete);
 
         passwordCancel.addEventListener('click', cancelPasswordModal);
         passwordConfirm.addEventListener('click', verifyPassword);
+        passwordInput.addEventListener('keydown', (event) => {
+          if (event.key === 'Enter') {
+            event.preventDefault();
+            verifyPassword();
+          }
+        });
 
         fileInput.addEventListener('change', (e) => {
           if (e.target.files.length > 0) {
@@ -2048,8 +2090,14 @@
 
         noteContent.addEventListener('input', () => {
           if (isReadMode) return;
-          undoStack.push(noteContent.value);
-          if (undoStack.length > 50) undoStack.shift();
+          clearTimeout(undoDebounceTimer);
+          undoDebounceTimer = setTimeout(() => {
+            const currentValue = noteContent.value;
+            if (undoStack[undoStack.length - 1] !== currentValue) {
+              undoStack.push(currentValue);
+              if (undoStack.length > 50) undoStack.shift();
+            }
+          }, 400);
           const note = notes.find((n) => n.id === currentNoteId);
           if (note) {
             note.content = noteContent.value;
