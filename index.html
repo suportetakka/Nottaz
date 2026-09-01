@@ -962,20 +962,29 @@
 
     #privacyView,
     #termsView {
-      padding-bottom: 60px !important;
+      padding-bottom: 80px !important;
+      overflow-y: auto !important;
     }
 
     #privacyBackBtn,
     #termsBackBtn {
-      margin-top: 24px !important;
-      margin-bottom: 20px !important;
-      display: block !important;
+      margin-top: 32px !important;
+      margin-bottom: 48px !important;
+      display: inline-block !important;
+      align-self: flex-start !important;
+    }
+
+    .info-view-spacer {
+      flex: 0 0 1px;
+      height: 1px;
+      background: transparent;
+      pointer-events: none;
     }
 
     .note-content-input,
     #noteContent {
-      font-size: 16px !important;
-      line-height: 1.5 !important;
+      font-size: 18px !important;
+      line-height: 1.6 !important;
     }
 
     .note-card p,
@@ -987,7 +996,7 @@
 
     .info-view p,
     .info-view li {
-      font-size: 15px !important;
+      font-size: 16px !important;
       line-height: 1.6 !important;
     }
 
@@ -1186,6 +1195,7 @@
       <h2>7. Contato</h2>
       <p>Se você tiver dúvidas sobre esta política, entre em contato conosco através do e-mail: suportetakka@gmail.com</p>
       <button id="privacyBackBtn" class="header-action-btn">← Voltar</button>
+      <div class="info-view-spacer" aria-hidden="true"></div>
     </main>
 
     <main id="termsView" class="view hidden info-view">
@@ -1209,6 +1219,7 @@
       <h2>8. Contato</h2>
       <p>Para dúvidas sobre estes termos, entre em contato: suportetakka@gmail.com</p>
       <button id="termsBackBtn" class="header-action-btn">← Voltar</button>
+      <div class="info-view-spacer" aria-hidden="true"></div>
     </main>
   </div>
 
