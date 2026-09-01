@@ -154,6 +154,9 @@
       min-height: 0;
       display: flex;
       flex-direction: column;
+      flex: 1 1 auto;
+      margin-bottom: 0;
+      padding-bottom: 0;
       filter: brightness(var(--brightness, 1));
     }
 
@@ -310,7 +313,7 @@
       bottom: 0;
       width: 280px;
       background: var(--surface-solid);
-      z-index: 99999 !important;
+      z-index: 10000 !important;
       box-shadow: 2px 0 12px rgba(0,0,0,0.2);
       padding: 20px 16px;
       overflow-y: auto;
@@ -472,6 +475,15 @@
       min-height: 0;
     }
 
+    #listView,
+    #privacyView,
+    #termsView {
+      height: 100%;
+      flex: 1 1 auto;
+      margin-bottom: 0;
+      padding-bottom: 0;
+    }
+
     .view-header {
       display: flex;
       align-items: center;
@@ -525,7 +537,7 @@
       position: fixed !important;
       bottom: 20px !important;
       left: 20px !important;
-      z-index: 500 !important;
+      z-index: 500;
       background: var(--fab-bg);
       color: var(--fab-text);
       border: none;
@@ -1891,25 +1903,35 @@
       }
 
       function bindEvents() {
+        function openSidebar() {
+          sidebar.classList.remove('hidden');
+          sidebarOverlay.classList.remove('hidden');
+          fabNewNote.classList.remove('is-visible');
+        }
+
+        function closeSidebar() {
+          sidebar.classList.add('hidden');
+          sidebarOverlay.classList.add('hidden');
+          if (currentView === 'list') {
+            fabNewNote.classList.toggle('is-visible', appReady);
+          }
+        }
+
         menuButton.addEventListener('click', () => {
-          sidebar.classList.toggle('hidden');
-          sidebarOverlay.classList.toggle('hidden');
+          if (sidebar.classList.contains('hidden')) {
+            openSidebar();
+          } else {
+            closeSidebar();
+          }
         });
-        sidebarClose.addEventListener('click', () => {
-          sidebar.classList.add('hidden');
-          sidebarOverlay.classList.add('hidden');
-        });
-        sidebarOverlay.addEventListener('click', () => {
-          sidebar.classList.add('hidden');
-          sidebarOverlay.classList.add('hidden');
-        });
+        sidebarClose.addEventListener('click', closeSidebar);
+        sidebarOverlay.addEventListener('click', closeSidebar);
 
         menuMinhasNotas.addEventListener('click', () => { switchView('list'); });
         menuDefinicao.addEventListener('click', () => {
           settingsModal.classList.remove('hidden');
           updateThemeOptionsUI();
-          sidebar.classList.add('hidden');
-          sidebarOverlay.classList.add('hidden');
+          closeSidebar();
         });
         menuPolitica.addEventListener('click', () => {
           switchView('privacy');
