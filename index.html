@@ -311,6 +311,10 @@
       top: 0;
       left: 0;
       bottom: 0;
+      height: 100vh !important;
+      min-height: 100vh !important;
+      max-height: 100vh !important;
+      box-sizing: border-box;
       width: 280px;
       background: var(--surface-solid);
       z-index: 10000 !important;
@@ -1917,6 +1921,15 @@
           }
         }
 
+        function returnToListView() {
+          closeSidebar();
+          app.style.height = '';
+          void app.offsetHeight;
+          app.style.height = '100%';
+          switchView('list');
+          app.style.height = '';
+        }
+
         menuButton.addEventListener('click', () => {
           if (sidebar.classList.contains('hidden')) {
             openSidebar();
@@ -2032,8 +2045,8 @@
         });
         headerUndoBtn.addEventListener('click', undoLastChar);
 
-        privacyBackBtn.addEventListener('click', () => switchView('list'));
-        termsBackBtn.addEventListener('click', () => switchView('list'));
+        privacyBackBtn.addEventListener('click', returnToListView);
+        termsBackBtn.addEventListener('click', returnToListView);
 
         helpButton.addEventListener('click', () => {
           helpModal.classList.remove('hidden');
