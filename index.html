@@ -105,16 +105,16 @@
       -webkit-tap-highlight-color: transparent;
     }
 
-    html {
+    html, body {
       height: 100%;
+      min-height: 100vh;
+      min-height: 100dvh;
     }
 
     body {
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
       background: var(--bg);
       color: var(--text);
-      height: 100%;
-      min-height: 0;
       transition: background 0.3s, color 0.3s, filter 0.3s;
       -webkit-font-smoothing: antialiased;
       user-select: none;
@@ -307,11 +307,12 @@
     }
 
     .sidebar {
-      position: fixed;
-      top: 0;
-      left: 0;
-      bottom: 0;
+      position: fixed !important;
+      top: 0 !important;
+      left: 0 !important;
+      bottom: 0 !important;
       height: 100vh !important;
+      height: 100dvh !important;
       min-height: 100vh !important;
       max-height: 100vh !important;
       box-sizing: border-box;
@@ -1048,6 +1049,24 @@
     <img src="https://i.postimg.cc/0QGz0y1Q/1000073770-removebg-preview.png" alt="Carregando..." />
   </div>
 
+  <div id="sidebarOverlay" class="sidebar-overlay hidden"></div>
+  <div id="sidebar" class="sidebar hidden">
+    <div class="sidebar-header">
+      <h2>Menu</h2>
+      <button id="sidebarClose" class="sidebar-close">×</button>
+    </div>
+    <ul class="sidebar-menu">
+      <li><button id="menuMinhasNotas"><span style="font-size:1.2em;">▤</span> Minhas notas</button></li>
+      <li><button id="menuDefinicao"><span style="font-size:1.2em;">⚙︎</span> Definições</button></li>
+      <li><button id="menuPolitica"><span style="font-size:1.2em;">⌑</span> Política de privacidade</button></li>
+      <li><button id="menuLixeira"><span style="font-size:1.2em;">♲</span> Lixeira</button></li>
+      <li><button id="menuIdioma" style="cursor: default;"><span style="font-size:1.2em;">◎</span> Idioma: português</button></li>
+      <li><button id="menuCompartilhar"><span style="font-size:1.2em;">↗</span> Compartilhar</button></li>
+      <li><button id="menuTermos"><span style="font-size:1.2em;">▥</span> Termos e condições</button></li>
+    </ul>
+    <div class="sidebar-version">Versão 1.1.0</div>
+  </div>
+
   <div id="app" class="app hidden">
     <header class="header">
       <div class="header-left">
@@ -1079,24 +1098,6 @@
         </div>
       </div>
     </header>
-
-    <div id="sidebarOverlay" class="sidebar-overlay hidden"></div>
-    <div id="sidebar" class="sidebar hidden">
-      <div class="sidebar-header">
-        <h2>Menu</h2>
-        <button id="sidebarClose" class="sidebar-close">×</button>
-      </div>
-      <ul class="sidebar-menu">
-        <li><button id="menuMinhasNotas"><span style="font-size:1.2em;">▤</span> Minhas notas</button></li>
-        <li><button id="menuDefinicao"><span style="font-size:1.2em;">⚙︎</span> Definições</button></li>
-        <li><button id="menuPolitica"><span style="font-size:1.2em;">⌑</span> Política de privacidade</button></li>
-        <li><button id="menuLixeira"><span style="font-size:1.2em;">♲</span> Lixeira</button></li>
-        <li><button id="menuIdioma" style="cursor: default;"><span style="font-size:1.2em;">◎</span> Idioma: português</button></li>
-        <li><button id="menuCompartilhar"><span style="font-size:1.2em;">↗</span> Compartilhar</button></li>
-        <li><button id="menuTermos"><span style="font-size:1.2em;">▥</span> Termos e condições</button></li>
-      </ul>
-      <div class="sidebar-version">Versão 1.1.0</div>
-    </div>
 
     <div id="searchBar" class="search-bar hidden">
       <input type="text" id="searchInput" placeholder="Buscar por título..." />
@@ -1923,11 +1924,7 @@
 
         function returnToListView() {
           closeSidebar();
-          app.style.height = '';
-          void app.offsetHeight;
-          app.style.height = '100%';
           switchView('list');
-          app.style.height = '';
         }
 
         menuButton.addEventListener('click', () => {
