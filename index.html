@@ -170,9 +170,9 @@
       box-shadow: var(--shadow);
       position: sticky;
       top: 0;
-      z-index: 999;
       transition: background 0.3s, border-color 0.3s;
       flex-shrink: 0;
+      z-index: 100 !important;
     }
 
     .header-left {
@@ -310,7 +310,7 @@
       bottom: 0;
       width: 280px;
       background: var(--surface-solid);
-      z-index: 160;
+      z-index: 99999 !important;
       box-shadow: 2px 0 12px rgba(0,0,0,0.2);
       padding: 20px 16px;
       overflow-y: auto;
@@ -525,7 +525,7 @@
       position: fixed !important;
       bottom: 20px !important;
       left: 20px !important;
-      z-index: 9999 !important;
+      z-index: 500 !important;
       background: var(--fab-bg);
       color: var(--fab-text);
       border: none;
