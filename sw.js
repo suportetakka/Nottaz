@@ -1,4 +1,4 @@
-const CACHE_NAME = 'nottaz-cache-v7';
+const CACHE_NAME = 'nottaz-cache-v8';
 const urlsToCache = [
   './',
   './index.html',
