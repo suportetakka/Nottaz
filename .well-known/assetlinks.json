@@ -3,6 +3,6 @@
       "target": {
         "namespace": "android_app",
         "package_name": "io.github.suportetakka.twa",
-        "sha256_cert_fingerprints": ["43:FE:19:F3:55:78:35:A0:80:63:ED:8D:03:EF:56:FF:F4:B1:52:F7:85:1C:F0:1F:75:B1:8B:08:F8:31:A7:7C"]
+        "sha256_cert_fingerprints": ["B2:C8:3B:A8:98:09:3B:C8:4B:44:16:95:12:E5:3C:4D:C3:61:45:24:B4:C6:74:25:5B:02:C1:E9:50:1D:81:48"]
       }
     }]
