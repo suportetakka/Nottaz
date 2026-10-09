@@ -170,18 +170,18 @@
     }
 
     .icon-btn {
-      background: var(--surface-solid);
-      border: 1px solid var(--border);
+      background: transparent;
+      border: none;
       border-radius: 50%;
       width: 38px; height: 38px;
       display: flex; align-items: center; justify-content: center;
       cursor: pointer; font-size: 1.1rem; color: var(--text);
       transition: background var(--transition), opacity var(--transition), transform var(--transition);
       opacity: 0.85;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+      box-shadow: none;
       outline: none;
     }
-    .icon-btn:hover { background: rgba(255,255,255,0.05); opacity: 1; transform: translateY(-1px); }
+    .icon-btn:hover { background: transparent; opacity: 1; transform: translateY(-1px); }
     .icon-btn:active { transform: scale(0.95); }
 
     #backButton {
@@ -286,8 +286,48 @@
       overflow-y: auto;
       overflow-x: hidden;
       -webkit-overflow-scrolling: touch;
+      /* Esconde a barra de rolagem estática (a rolagem continua funcionando normalmente) */
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+    .view::-webkit-scrollbar {
+      display: none;
+      width: 0;
+      height: 0;
+      background: transparent;
     }
     #listView, #privacyView, #termsView { flex: 1 1 auto; }
+
+    /* As listas de notas ocupam a largura total da tela (o recuo lateral do .app cortava as
+       linhas divisórias antes da borda). O padding devolve o conteúdo à posição de sempre. */
+    #listView, #trashView {
+      margin-left: calc(50% - 50vw);
+      margin-right: calc(50% - 50vw);
+      padding-left: calc(50vw - 50%);
+      padding-right: calc(50vw - 50%);
+    }
+
+    /* Indicador de rolagem dinâmico: invisível com a tela parada, aparece só enquanto o
+       usuário desliza (a classe .is-scrolling é ligada pelo mini-script no fim do arquivo). */
+    body::after {
+      content: '';
+      position: fixed;
+      top: 0;
+      right: 2px;
+      width: 3px;
+      height: var(--sb-height, 0px);
+      border-radius: 3px;
+      background: rgba(255, 255, 255, 0.35);
+      transform: translateY(var(--sb-top, 0px));
+      opacity: 0;
+      transition: opacity 0.35s ease;
+      pointer-events: none;
+      z-index: 120;
+    }
+    body.is-scrolling::after {
+      opacity: 1;
+      transition-duration: 0.1s;
+    }
 
     .view-header {
       display: flex; align-items: center; justify-content: flex-start;
@@ -377,8 +417,10 @@
       color: var(--text);
       border: none;
       border-radius: 0;
-      padding: 28px 16px;
-      margin: 0 -16px -1px -16px;
+      /* O card (e as linhas dele) vai de borda a borda da tela; o padding mantém o texto
+         alinhado como antes. Em telas de até 860px isso equivale a 16px de cada lado. */
+      padding: 28px calc(50vw - 50%);
+      margin: 0 calc(50% - 50vw) -1px calc(50% - 50vw);
       cursor: pointer;
       position: relative;
       transition: background var(--transition);
@@ -391,12 +433,15 @@
       position: absolute;
       left: 0;
       right: 0;
+      width: 100%;
       height: var(--line-thickness);
       background: linear-gradient(90deg,
         transparent 0%,
         var(--accent-yellow-dim-soft) 10%,
         var(--accent-yellow-dim-soft) 90%,
         transparent 100%);
+      /* ~30% mais sutil (vale também para hover, selecionada e lixeira) */
+      opacity: 0.7;
       pointer-events: none;
       transition: background 0.2s ease;
     }
@@ -1757,6 +1802,40 @@
       init();
     })();
   </script>
+<script>
+  /* Indicador de rolagem: liga/desliga a classe .is-scrolling enquanto uma lista (.view) rola */
+  (function () {
+    var hideTimer = null;
+    var frame = 0;
+    var current = null;
+
+    function updateThumb() {
+      frame = 0;
+      var el = current;
+      if (!el) return;
+      var scrollable = el.scrollHeight - el.clientHeight;
+      if (scrollable <= 1) return;
+      var rect = el.getBoundingClientRect();
+      var thumbH = Math.max(36, rect.height * (el.clientHeight / el.scrollHeight));
+      var progress = Math.min(1, Math.max(0, el.scrollTop / scrollable));
+      var style = document.body.style;
+      style.setProperty('--sb-top', (rect.top + progress * (rect.height - thumbH)) + 'px');
+      style.setProperty('--sb-height', thumbH + 'px');
+    }
+
+    document.addEventListener('scroll', function (e) {
+      var el = e.target;
+      if (!el || !el.classList || !el.classList.contains('view')) return;
+      current = el;
+      if (!frame) frame = requestAnimationFrame(updateThumb);
+      document.body.classList.add('is-scrolling');
+      clearTimeout(hideTimer);
+      hideTimer = setTimeout(function () {
+        document.body.classList.remove('is-scrolling');
+      }, 700);
+    }, { capture: true, passive: true });
+  })();
+</script>
 <script>
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
