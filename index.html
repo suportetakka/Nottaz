@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
+  <meta charset="UTF-8" />
   <meta name="theme-color" content="#000000">
   <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-app.js";
-  import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-analytics.js";
+  /* Firebase Analytics: carregado só depois que a página terminou de carregar e o navegador
+     está ocioso (import dinâmico). Assim o download e a execução do Firebase nunca atrasam a
+     tela inicial, e uma falha de rede é ignorada sem afetar o app. */
 
   const firebaseConfig = {
     apiKey: "AIzaSyCSzYM4SGHE42rS5hGYjoail9nr4QX2hyA",
@@ -16,11 +18,24 @@
     measurementId: "G-FGNMGTTFRB"
   };
 
-  const app = initializeApp(firebaseConfig);
-  const analytics = getAnalytics(app);
+  function startAnalytics() {
+    Promise.all([
+      import("https://www.gstatic.com/firebasejs/12.18.0/firebase-app.js"),
+      import("https://www.gstatic.com/firebasejs/12.18.0/firebase-analytics.js")
+    ]).then(function (mods) {
+      mods[1].getAnalytics(mods[0].initializeApp(firebaseConfig));
+    }).catch(function () { /* offline ou bloqueado: o app segue sem analytics */ });
+  }
+
+  function scheduleAnalytics() {
+    if ('requestIdleCallback' in window) requestIdleCallback(startAnalytics, { timeout: 5000 });
+    else setTimeout(startAnalytics, 3000);
+  }
+
+  if (document.readyState === 'complete') scheduleAnalytics();
+  else window.addEventListener('load', scheduleAnalytics, { once: true });
 </script>
   <link rel="manifest" href="manifest.json">
-  <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, interactive-widget=resizes-content" />
   <title>Nottaz</title>
   <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
@@ -113,6 +128,16 @@
       justify-content: center;
       position: relative;
     }
+
+    /* Spinner: fica logo abaixo do logo (sem deslocá-lo) e continua visível mesmo que a imagem demore ou falhe. */
+    #loadingOverlay .loading-spinner {
+      position: absolute; top: calc(100% + 28px); left: 50%;
+      width: 28px; height: 28px; margin-left: -14px; border-radius: 50%;
+      border: 2px solid rgba(255, 255, 255, 0.12);
+      border-top-color: var(--accent-yellow);
+      animation: nottazSpin 0.85s linear infinite;
+    }
+    @keyframes nottazSpin { to { transform: rotate(360deg); } }
 
     #loadingLogo {
       width: 100%;
@@ -613,6 +638,34 @@
 
     .brightness-slider { width: 100%; cursor: pointer; outline: none; }
 
+    /* ===== Texto da nota (Definições) ===== */
+    #settingsModal .settings-box { max-height: 90vh; max-height: 90dvh; overflow-y: auto; overscroll-behavior: contain; }
+    .setting-section-title { font-size: 1rem; font-weight: 600; padding-top: 16px; border-top: 1px solid var(--border); }
+    .setting-hint { font-size: 0.8rem; line-height: 1.4; color: var(--text-secondary); margin: 2px 0 16px; }
+    .note-opts { display: grid; gap: 8px; }
+    .note-opts.cols-4 { grid-template-columns: repeat(4, 1fr); }
+    .note-opts.cols-2 { grid-template-columns: repeat(2, 1fr); }
+    .note-opt {
+      padding: 8px 4px; border: 1px solid var(--border); border-radius: 8px;
+      cursor: pointer; background: var(--surface-solid); color: var(--text); outline: none;
+    }
+    .note-opt.active { border-color: var(--accent-yellow); background: rgba(250, 204, 21, 0.12); color: var(--accent-yellow); }
+    .note-colors { display: grid; grid-template-columns: repeat(auto-fit, minmax(32px, 1fr)); gap: 8px; }
+    .note-color {
+      width: 100%; max-width: 34px; aspect-ratio: 1 / 1; justify-self: center; padding: 0;
+      border-radius: 50%; border: 1px solid rgba(255, 255, 255, 0.18); cursor: pointer; outline: none;
+    }
+    .note-color.active { box-shadow: 0 0 0 2px var(--surface-solid), 0 0 0 4px var(--text); }
+    .note-opt:focus-visible, .note-color:focus-visible { outline: 2px solid var(--accent-yellow); outline-offset: 2px; }
+
+    /* Só o corpo da nota lê estas variáveis (dois IDs vencem as regras !important acima, apenas para este campo).
+       Título, cards/prévias e o restante da interface não são afetados. Sem escolha salva, vale o visual anterior. */
+    #editorView #noteContent {
+      font-family: var(--note-font-family, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif) !important;
+      font-size: var(--note-font-size, 18px) !important;
+      color: var(--note-text-color, var(--text));
+    }
+
     .info-view { padding: 20px 0; }
 
     #privacyView, #termsView { padding-bottom: 80px !important; }
@@ -671,6 +724,28 @@
         transparent 100%);
     }
 
+    /* Botão "Abrir Política de Privacidade Oficial na Web" (cápsula) */
+    .privacy-web-btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+      max-width: 100%; padding: 12px 22px; border-radius: 999px;
+      border: 1px solid rgba(250, 204, 21, 0.4);
+      background: rgba(30, 30, 30, 0.6);
+      -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
+      color: var(--text); font-size: 0.95rem; font-weight: 600; line-height: 1.3;
+      text-align: center; text-decoration: none; cursor: pointer;
+      transition: border-color var(--transition), box-shadow var(--transition),
+                  background var(--transition), opacity var(--transition), transform var(--transition);
+    }
+    @media (hover: hover) {
+      .privacy-web-btn:hover {
+        border-color: rgba(250, 204, 21, 0.8);
+        background: rgba(250, 204, 21, 0.08);
+        box-shadow: 0 0 16px rgba(250, 204, 21, 0.28);
+      }
+    }
+    .privacy-web-btn:active { opacity: 0.75; transform: scale(0.98); box-shadow: 0 0 12px rgba(250, 204, 21, 0.28); }
+    .privacy-web-btn:focus-visible { outline: 2px solid var(--accent-yellow); outline-offset: 3px; }
+
     @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
     @media (max-width: 600px) {
@@ -685,6 +760,7 @@
   <div id="loadingOverlay">
     <div class="loading-wrap">
       <img id="loadingLogo" src="https://files.catbox.moe/zlsswb.png" alt="Nottaz" />
+      <div class="loading-spinner" role="status" aria-label="Carregando"></div>
     </div>
   </div>
 
@@ -809,7 +885,7 @@
     <p>Se você tiver dúvidas sobre esta política, entre em contato através do e-mail: suportetakka@gmail.com</p>
 
 <div style="margin-top: 20px; margin-bottom: 20px; text-align: center;">
-  <a href="https://suportetakka.github.io/Nottaz/politica.html" target="_blank" style="color: #facc15; font-weight: bold; text-decoration: underline;">
+  <a class="privacy-web-btn" href="https://suportetakka.github.io/Nottaz/politica.html" target="_blank" rel="noopener noreferrer">
     🌐 Abrir Política de Privacidade Oficial na Web
   </a>
 </div>
@@ -885,6 +961,39 @@
       <div class="setting-group">
         <div class="setting-label">Brilho</div>
         <input type="range" min="0.5" max="1.5" step="0.1" value="1" class="brightness-slider" id="brightnessSlider">
+      </div>
+      <div class="setting-section-title">Texto da nota</div>
+      <p class="setting-hint">Vale só para o texto dentro das notas.</p>
+      <div class="setting-group">
+        <div class="setting-label">Tamanho da fonte</div>
+        <div class="note-opts cols-4" role="group" aria-label="Tamanho da fonte">
+          <button type="button" class="note-opt" data-note-size="p" aria-label="Pequeno">P</button>
+          <button type="button" class="note-opt" data-note-size="m" aria-label="Médio">M</button>
+          <button type="button" class="note-opt" data-note-size="g" aria-label="Grande">G</button>
+          <button type="button" class="note-opt" data-note-size="gg" aria-label="Muito grande">GG</button>
+        </div>
+      </div>
+      <div class="setting-group">
+        <div class="setting-label">Estilo da fonte</div>
+        <div class="note-opts cols-2" role="group" aria-label="Estilo da fonte">
+          <button type="button" class="note-opt" data-note-font="padrao">Padrão</button>
+          <button type="button" class="note-opt" data-note-font="classica">Clássica</button>
+          <button type="button" class="note-opt" data-note-font="codigo">Código</button>
+          <button type="button" class="note-opt" data-note-font="manuscrita">Manuscrita</button>
+        </div>
+      </div>
+      <div class="setting-group">
+        <div class="setting-label">Cor do texto</div>
+        <div class="note-colors" role="group" aria-label="Cor do texto">
+          <button type="button" class="note-color" data-note-color="#f1f5f9" aria-label="Branco (padrão)" title="Branco (padrão)"></button>
+          <button type="button" class="note-color" data-note-color="#facc15" aria-label="Amarelo" title="Amarelo"></button>
+          <button type="button" class="note-color" data-note-color="#4ade80" aria-label="Verde" title="Verde"></button>
+          <button type="button" class="note-color" data-note-color="#60a5fa" aria-label="Azul" title="Azul"></button>
+          <button type="button" class="note-color" data-note-color="#f87171" aria-label="Vermelho" title="Vermelho"></button>
+          <button type="button" class="note-color" data-note-color="#a78bfa" aria-label="Roxo" title="Roxo"></button>
+          <button type="button" class="note-color" data-note-color="#f472b6" aria-label="Rosa" title="Rosa"></button>
+          <button type="button" class="note-color" data-note-color="#fb923c" aria-label="Laranja" title="Laranja"></button>
+        </div>
       </div>
       <button id="settingsCloseBtn" class="header-action-btn" style="width:100%;text-align:center;">Fechar</button>
     </div>
@@ -1837,6 +1946,74 @@
       init();
     })();
   </script>
+<script>
+  /* Texto da nota (Definições): guarda as escolhas em localStorage e as aplica por variáveis CSS
+     que só o campo #noteContent usa. Bloco independente: não altera nenhuma função existente. */
+  (function () {
+    var KEYS = { size: 'notas-note-size', font: 'notas-note-font', color: 'notas-note-color' };
+    var SIZES = { p: '15px', m: '', g: '22px', gg: '26px' };   // m = tamanho original (18px)
+    var FONTS = {
+      padrao: '',                                               // vazio = fonte original do app
+      classica: 'Georgia, "Times New Roman", Times, serif',
+      codigo: '"Courier New", Courier, ui-monospace, Menlo, Consolas, monospace',
+      manuscrita: '"Segoe Print", "Ink Free", "Bradley Hand", "Noteworthy", "Marker Felt", "Chilanka", "Comic Sans MS", cursive'
+    };
+    var DEFAULT_COLOR = '#f1f5f9';
+
+    var modal = document.getElementById('settingsModal');
+    if (!modal) return;
+    var root = document.documentElement;
+    var sizeBtns = modal.querySelectorAll('[data-note-size]');
+    var fontBtns = modal.querySelectorAll('[data-note-font]');
+    var colorBtns = modal.querySelectorAll('[data-note-color]');
+
+    function has(o, k) { return Object.prototype.hasOwnProperty.call(o, k); }
+    function read(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+    function write(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+    function setVar(name, v) { if (v) root.style.setProperty(name, v); else root.style.removeProperty(name); }
+    function mark(btns, attr, value) {
+      btns.forEach(function (b) {
+        var on = b.getAttribute(attr) === value;
+        b.classList.toggle('active', on);
+        b.setAttribute('aria-pressed', on ? 'true' : 'false');
+      });
+    }
+
+    var colors = [];
+    colorBtns.forEach(function (b) {
+      var c = b.getAttribute('data-note-color');
+      colors.push(c);
+      b.style.background = c;
+    });
+
+    var state = { size: 'm', font: 'padrao', color: DEFAULT_COLOR };
+    var s = read(KEYS.size), f = read(KEYS.font), c = read(KEYS.color);
+    if (s && has(SIZES, s)) state.size = s;
+    if (f && has(FONTS, f)) state.font = f;
+    if (c && colors.indexOf(c) !== -1) state.color = c;
+
+    function apply() {
+      setVar('--note-font-size', SIZES[state.size]);
+      setVar('--note-font-family', FONTS[state.font]);
+      setVar('--note-text-color', state.color === DEFAULT_COLOR ? '' : state.color);
+      mark(sizeBtns, 'data-note-size', state.size);
+      mark(fontBtns, 'data-note-font', state.font);
+      mark(colorBtns, 'data-note-color', state.color);
+    }
+
+    modal.addEventListener('click', function (e) {
+      var btn = e.target.closest ? e.target.closest('button') : null;
+      if (!btn || !modal.contains(btn)) return;
+      if (btn.hasAttribute('data-note-size')) { state.size = btn.getAttribute('data-note-size'); write(KEYS.size, state.size); }
+      else if (btn.hasAttribute('data-note-font')) { state.font = btn.getAttribute('data-note-font'); write(KEYS.font, state.font); }
+      else if (btn.hasAttribute('data-note-color')) { state.color = btn.getAttribute('data-note-color'); write(KEYS.color, state.color); }
+      else return;
+      apply();
+    });
+
+    apply();
+  })();
+</script>
 <script>
   /* Indicador de rolagem: liga/desliga a classe .is-scrolling enquanto uma lista (.view) rola */
   (function () {
